@@ -5,6 +5,7 @@ import ru.y_lab.actions.UserActions;
 import java.util.Scanner;
 
 import static ru.y_lab.menu.ProfileMenu.showProfileMenu;
+import static ru.y_lab.menu.TransactionMenu.showTransactionMenu;
 
 public class UserLoginMenu {
 
@@ -20,10 +21,7 @@ public class UserLoginMenu {
 
             switch (choice) {
                 case 1 -> showProfileMenu(scanner);
-                case 2 -> {
-                    // Добавить сюда логику для управления транзакциями
-                    System.out.println("Управление транзакциями");
-                }
+                case 2 -> showTransactionMenu(scanner);
                 case 3 -> {
                     UserActions.logout(); // Разлогиниваем пользователя
                     return; // Возвращаемся в главное меню

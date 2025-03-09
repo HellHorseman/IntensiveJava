@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public class UserService {
     private final List<User> users = new ArrayList<>();
+    private int idCounter = 1;
 
     // Регистрация нового пользователя
     public boolean register(String name, String email, String password) {
@@ -15,7 +16,8 @@ public class UserService {
             System.out.println("Ошибка: пользователь с таким email уже существует.");
             return false;
         }
-        users.add(new User(name, email, password));
+        int id = idCounter++;
+        users.add(new User(id, name, email, password));
         System.out.println("Регистрация успешна!");
         return true;
     }
@@ -28,7 +30,7 @@ public class UserService {
     }
 
     // Редактирование профиля пользователя
-    public boolean updateUser(String userId, String newName, String newEmail, String newPassword) {
+    public boolean updateUser(int userId, String newName, String newEmail, String newPassword) {
         Optional<User> userOpt = findById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -47,8 +49,8 @@ public class UserService {
     }
 
     // Удаление пользователя
-    public boolean deleteUser(String userId) {
-        return users.removeIf(user -> user.getId().equals(userId));
+    public boolean deleteUser(int userId) {
+        return users.removeIf(user -> user.getId() == userId);
     }
 
     // Получение всех пользователей (для администратора)
@@ -57,8 +59,8 @@ public class UserService {
     }
 
     // Поиск пользователя по ID
-    private Optional<User> findById(String userId) {
-        return users.stream().filter(user -> user.getId().equals(userId)).findFirst();
+    private Optional<User> findById(int userId) {
+        return users.stream().filter(user -> user.getId() == userId).findFirst();
     }
 
     // Проверка, существует ли email

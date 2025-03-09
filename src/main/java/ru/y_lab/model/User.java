@@ -1,22 +1,26 @@
 package ru.y_lab.model;
 
-import java.util.UUID;
-
 public class User {
 
-        private final String id;
+        private int id;
         private String name;
         private String email;
         private String password;
 
-        public User(String name, String email, String password) {
-            this.id = UUID.randomUUID().toString();
+        public User(int id, String name, String email, String password) {
+            this.id = id;
             this.name = name;
             this.email = email;
             this.password = password;
         }
 
-        public String getId() {
+        public User(String name, String email, String password) {
+            this.name = name;
+            this.email = email;
+            this.password = password;
+        }
+
+        public int getId() {
             return id;
         }
 
