@@ -12,10 +12,10 @@ public class FinanceTrackerApp {
         AnalyticsService analyticsService = new AnalyticsService(transactionService);
 
         // Настройки для EmailService
-        String smtpHost = "smtp.gmail.com"; // SMTP-сервер (например, для Gmail)
-        String smtpPort = "587"; // Порт для TLS
-        String emailUsername = "ваш_email@gmail.com"; // Ваш email
-        String emailPassword = "ваш_пароль"; // Ваш пароль от email
+        String smtpHost = "smtp.gmail.com";
+        String smtpPort = "587";
+        String emailUsername = "ваш_email@gmail.com";
+        String emailPassword = "ваш_пароль";
 
         EmailService emailService = new EmailService(smtpHost, smtpPort, emailUsername, emailPassword);
         NotificationService notificationService = new NotificationService(budgetService, transactionService, emailService);
@@ -26,8 +26,9 @@ public class FinanceTrackerApp {
         GoalMenu goalMenu = new GoalMenu(goalService);
         AnalyticsMenu analyticsMenu = new AnalyticsMenu(analyticsService);
         NotificationMenu notificationMenu = new NotificationMenu(notificationService, goalService);
+        AdminMenu adminMenu = new AdminMenu(userService, transactionService);
         UserMenu userMenu = new UserMenu(transactionService, transactionMenu, profileMenu, budgetMenu, goalMenu, analyticsMenu, notificationMenu);
-        MainMenu mainMenu = new MainMenu(userService, userMenu, profileMenu, budgetMenu);
+        MainMenu mainMenu = new MainMenu(userService, userMenu, adminMenu);
 
         mainMenu.show();
     }

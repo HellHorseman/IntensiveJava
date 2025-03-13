@@ -8,15 +8,13 @@ import java.util.Scanner;
 public class MainMenu {
     private UserService userService;
     private UserMenu userMenu;
-    private ProfileMenu profileMenu;
-    private BudgetMenu budgetMenu;
+    private AdminMenu adminMenu;
     private Scanner scanner;
 
-    public MainMenu(UserService userService, UserMenu userMenu, ProfileMenu profileMenu, BudgetMenu budgetMenu) {
+    public MainMenu(UserService userService, UserMenu userMenu, AdminMenu adminMenu) {
         this.userService = userService;
         this.userMenu = userMenu;
-        this.profileMenu = profileMenu;
-        this.budgetMenu = budgetMenu;
+        this.adminMenu = adminMenu;
         this.scanner = new Scanner(System.in);
     }
 
@@ -51,8 +49,10 @@ public class MainMenu {
         String password = scanner.nextLine();
         System.out.println("Введите имя:");
         String name = scanner.nextLine();
+        System.out.println("Это администратор? (да/нет):");
+        boolean isAdmin = scanner.nextLine().equalsIgnoreCase("да");
 
-        if (userService.registerUser(email, password, name)) {
+        if (userService.registerUser(email, password, name, isAdmin)) {
             System.out.println("Пользователь успешно зарегистрирован");
         } else {
             System.out.println("Пользователь с таким email уже существует");
@@ -68,7 +68,11 @@ public class MainMenu {
         User user = userService.login(email, password);
         if (user != null) {
             System.out.println("Вход выполнен успешно");
-            userMenu.show(user);
+            if (user.isAdmin()) {
+                adminMenu.show(user);
+            } else {
+                userMenu.show(user);
+            }
         } else {
             System.out.println("Неверный email или пароль");
         }

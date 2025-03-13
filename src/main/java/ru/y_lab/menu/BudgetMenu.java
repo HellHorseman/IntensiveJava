@@ -53,7 +53,7 @@ public class BudgetMenu {
     private void setMonthlyBudget(User user) {
         System.out.println("Введите месячный бюджет:");
         double monthlyBudget = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
         budgetService.setMonthlyBudget(user.getEmail(), monthlyBudget);
         System.out.println("Месячный бюджет успешно установлен");
     }
@@ -70,7 +70,7 @@ public class BudgetMenu {
     private void updateMonthlyBudget(User user) {
         System.out.println("Введите новый месячный бюджет:");
         double monthlyBudget = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
         if (budgetService.updateMonthlyBudget(user.getEmail(), monthlyBudget)) {
             System.out.println("Месячный бюджет успешно обновлен");
         } else {

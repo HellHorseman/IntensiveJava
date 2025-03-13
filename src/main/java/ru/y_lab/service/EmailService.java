@@ -20,7 +20,6 @@ public class EmailService {
 
     // Метод для отправки email
     public void sendEmail(String to, String subject, String text) {
-        // Настройка свойств для подключения к SMTP-серверу
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", port);

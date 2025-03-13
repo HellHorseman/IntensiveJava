@@ -23,17 +23,17 @@ public class NotificationMenu {
             System.out.println("2. Проверить прогресс по целям");
             System.out.println("3. Вернуться в главное меню");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    notificationService.checkBudgetExceeded(user.getEmail(), user.getEmail()); // Передаем email
+                    notificationService.checkBudgetExceeded(user.getEmail(), user.getEmail());
                     break;
                 case 2:
-                    notificationService.checkGoalProgress(user.getEmail(), user.getEmail(), goalService); // Передаем email
+                    notificationService.checkGoalProgress(user.getEmail(), user.getEmail(), goalService);
                     break;
                 case 3:
-                    return; // Возврат в главное меню
+                    return;
                 default:
                     System.out.println("Неверный выбор");
             }

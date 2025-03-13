@@ -55,26 +55,48 @@ public class ProfileMenu {
 
     private void editEmail(User user) {
         System.out.println("Введите новый email:");
-        String email = scanner.nextLine();
-        if (userService.updateUser(user.getEmail(), user.getName(), user.getPassword())) {
-            System.out.println("Email успешно изменен");
+        String newEmail = scanner.nextLine();
+        System.out.println("Введите пароль для подтверждения:");
+        String password = scanner.nextLine();
+
+        if (user.getPassword().equals(password)) {
+            if (userService.updateUserEmail(user.getEmail(), newEmail)) {
+                user.setEmail(newEmail);
+                System.out.println("Email успешно изменен");
+            } else {
+                System.out.println("Ошибка при изменении email");
+            }
         } else {
-            System.out.println("Ошибка при изменении email");
+            System.out.println("Неверный пароль");
         }
     }
 
     private void editPassword(User user) {
         System.out.println("Введите новый пароль:");
-        String password = scanner.nextLine();
-        user.setPassword(password);
-        System.out.println("Пароль успешно изменен");
+        String newPassword = scanner.nextLine();
+        System.out.println("Введите старый пароль для подтверждения:");
+        String oldPassword = scanner.nextLine();
+
+        if (user.getPassword().equals(oldPassword)) {
+            user.setPassword(newPassword);
+            System.out.println("Пароль успешно изменен");
+        } else {
+            System.out.println("Неверный старый пароль");
+        }
     }
 
     private void deleteAccount(User user) {
-        if (userService.deleteUser(user.getEmail())) {
-            System.out.println("Аккаунт успешно удален");
+        System.out.println("Введите пароль для подтверждения:");
+        String password = scanner.nextLine();
+
+        if (user.getPassword().equals(password)) {
+            if (userService.deleteUser(user.getEmail())) {
+                System.out.println("Аккаунт успешно удален");
+            } else {
+                System.out.println("Ошибка при удалении аккаунта");
+            }
         } else {
-            System.out.println("Ошибка при удалении аккаунта");
+            System.out.println("Неверный пароль");
         }
     }
 }

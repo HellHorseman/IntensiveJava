@@ -9,7 +9,7 @@ import java.util.List;
 public class NotificationService {
     private BudgetService budgetService;
     private TransactionService transactionService;
-    private EmailService emailService; // Добавляем EmailService
+    private EmailService emailService;
 
     public NotificationService(BudgetService budgetService, TransactionService transactionService, EmailService emailService) {
         this.budgetService = budgetService;

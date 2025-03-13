@@ -52,7 +52,7 @@ public class GoalMenu {
         String name = scanner.nextLine();
         System.out.println("Введите целевую сумму:");
         double targetAmount = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
 
         if (goalService.addGoal(user.getEmail(), name, targetAmount)) {
             System.out.println("Цель успешно добавлена");
@@ -64,7 +64,10 @@ public class GoalMenu {
     private void viewGoals(User user) {
         List<Goal> goals = goalService.getGoals(user.getEmail());
         for (Goal goal : goals) {
-            System.out.println("ID: " + goal.getId() + ", Название: " + goal.getName() + ", Целевая сумма: " + goal.getTargetAmount() + ", Текущая сумма: " + goal.getCurrentAmount());
+            System.out.println("ID: " + goal.getId() +
+                    ", Название: " + goal.getName() +
+                    ", Целевая сумма: " + goal.getTargetAmount() +
+                    ", Текущая сумма: " + goal.getCurrentAmount());
         }
     }
 
@@ -75,10 +78,10 @@ public class GoalMenu {
         String name = scanner.nextLine();
         System.out.println("Введите новую целевую сумму:");
         double targetAmount = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
         System.out.println("Введите текущую сумму:");
         double currentAmount = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
 
         if (goalService.updateGoal(id, name, targetAmount, currentAmount)) {
             System.out.println("Цель успешно обновлена");

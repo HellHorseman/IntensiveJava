@@ -70,7 +70,12 @@ public class TransactionMenu {
     public void viewTransactions(User user) {
         List<Transaction> transactions = transactionService.getTransactions(user.getEmail());
         for (Transaction transaction : transactions) {
-            System.out.println("ID: " + transaction.getId() + ", Сумма: " + transaction.getAmount() + ", Категория: " + transaction.getCategory() + ", Дата: " + transaction.getDate() + ", Описание: " + transaction.getDescription() + ", Тип: " + transaction.getType());
+            System.out.println("ID: " + transaction.getId() +
+                    ", Сумма: " + transaction.getAmount() +
+                    ", Категория: " + transaction.getCategory() +
+                    ", Дата: " + transaction.getDate() +
+                    ", Описание: " + transaction.getDescription() +
+                    ", Тип: " + transaction.getType());
         }
     }
 
@@ -79,7 +84,7 @@ public class TransactionMenu {
         String id = scanner.nextLine();
         System.out.println("Введите новую сумму:");
         double amount = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
         System.out.println("Введите новую категорию:");
         String category = scanner.nextLine();
         System.out.println("Введите новое описание:");
