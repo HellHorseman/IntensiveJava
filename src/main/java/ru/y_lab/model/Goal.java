@@ -1,12 +1,30 @@
 package ru.y_lab.model;
 
 public class Goal {
+    private String id;
+    private String userId;
+    private String name;
     private double targetAmount;
     private double currentAmount;
 
-    public Goal(double targetAmount) {
+    public Goal(String id, String userId, String name, double targetAmount, double currentAmount) {
+        this.id = id;
+        this.userId = userId;
+        this.name = name;
         this.targetAmount = targetAmount;
-        this.currentAmount = 0.0;
+        this.currentAmount = currentAmount;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public double getTargetAmount() {
@@ -17,12 +35,15 @@ public class Goal {
         return currentAmount;
     }
 
-    public void addProgress(double amount) {
-        this.currentAmount += amount;
+    public void setCurrentAmount(double currentAmount) {
+        this.currentAmount = currentAmount;
     }
 
-    public boolean isGoalAchieved() {
-        return currentAmount >= targetAmount;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTargetAmount(double targetAmount) {
+        this.targetAmount = targetAmount;
     }
 }
-

@@ -1,12 +1,16 @@
 package ru.y_lab.model;
 
 public class Budget {
+    private String userId;
     private double monthlyBudget;
-    private double currentSpending;
 
-    public Budget(double monthlyBudget) {
+    public Budget(String userId, double monthlyBudget) {
+        this.userId = userId;
         this.monthlyBudget = monthlyBudget;
-        this.currentSpending = 0.0;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public double getMonthlyBudget() {
@@ -15,18 +19,6 @@ public class Budget {
 
     public void setMonthlyBudget(double monthlyBudget) {
         this.monthlyBudget = monthlyBudget;
-    }
-
-    public double getCurrentSpending() {
-        return currentSpending;
-    }
-
-    public void addTransaction(double amount) {
-        this.currentSpending += amount;
-    }
-
-    public boolean isOverBudget() {
-        return currentSpending > monthlyBudget;
     }
 }
 

@@ -1,29 +1,33 @@
 package ru.y_lab.service;
 
 import ru.y_lab.model.Budget;
-import ru.y_lab.model.Transaction;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BudgetService {
-    private Budget budget;
+    private Map<String, Budget> budgets;
 
-    public BudgetService(double monthlyBudget) {
-        this.budget = new Budget(monthlyBudget);
+    public BudgetService() {
+        budgets = new HashMap<>();
     }
 
-    public void addTransaction(Transaction transaction) {
-        budget.addTransaction(transaction.getAmount());
+    public boolean setMonthlyBudget(String userId, double monthlyBudget) {
+        budgets.put(userId, new Budget(userId, monthlyBudget));
+        return true;
     }
 
-    public boolean isOverBudget() {
-        return budget.isOverBudget();
+    public Budget getBudget(String userId) {
+        return budgets.get(userId);
     }
 
-    public void setMonthlyBudget(double amount) {
-        budget.setMonthlyBudget(amount);
-    }
-
-    public double getCurrentSpending() {
-        return budget.getCurrentSpending();
+    public boolean updateMonthlyBudget(String userId, double monthlyBudget) {
+        Budget budget = budgets.get(userId);
+        if (budget != null) {
+            budget.setMonthlyBudget(monthlyBudget);
+            return true;
+        }
+        return false;
     }
 }
 

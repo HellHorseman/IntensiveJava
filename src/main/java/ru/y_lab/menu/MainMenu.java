@@ -1,48 +1,76 @@
 package ru.y_lab.menu;
 
-import ru.y_lab.actions.UserActions;
+import ru.y_lab.model.User;
 import ru.y_lab.service.UserService;
 
 import java.util.Scanner;
 
-import static ru.y_lab.menu.UserLoginMenu.showUserLoginMenu;
-
 public class MainMenu {
-    private static final UserService userService = new UserService();
+    private UserService userService;
+    private UserMenu userMenu;
+    private ProfileMenu profileMenu;
+    private BudgetMenu budgetMenu;
+    private Scanner scanner;
 
-    public static void showMainMenu(Scanner scanner) {
+    public MainMenu(UserService userService, UserMenu userMenu, ProfileMenu profileMenu, BudgetMenu budgetMenu) {
+        this.userService = userService;
+        this.userMenu = userMenu;
+        this.profileMenu = profileMenu;
+        this.budgetMenu = budgetMenu;
+        this.scanner = new Scanner(System.in);
+    }
+
+    public void show() {
         while (true) {
-            if (!UserActions.isLoggedIn()) {
-                // Меню, если пользователь не залогинен
-                System.out.println("\n--- Меню ---");
-                System.out.println("1. Регистрация");
-                System.out.println("2. Вход");
-                System.out.println("3. Выход");
-                System.out.print("Выберите действие: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine();
+            System.out.println("1. Регистрация");
+            System.out.println("2. Вход");
+            System.out.println("3. Выход");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
-                switch (choice) {
-                    case 1 -> UserActions.register(scanner);
-                    case 2 -> {
-                        UserActions.login(scanner);
-                        if (UserActions.isLoggedIn()) {
-                            // Если логин успешен, переходим в меню профиля
-                            showUserLoginMenu(scanner);
-                        }
-                    }
-                    case 3 -> {
-                        System.out.println("Выход из программы...");
-                        return; // Выход из программы
-                    }
-                    default -> System.out.println("Некорректный ввод.");
-                }
-            } else {
-                // Меню после успешного входа
-                showUserLoginMenu(scanner);
+            switch (choice) {
+                case 1:
+                    registerUser();
+                    break;
+                case 2:
+                    loginUser();
+                    break;
+                case 3:
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Неверный выбор");
             }
         }
     }
 
+    private void registerUser() {
+        System.out.println("Введите email:");
+        String email = scanner.nextLine();
+        System.out.println("Введите пароль:");
+        String password = scanner.nextLine();
+        System.out.println("Введите имя:");
+        String name = scanner.nextLine();
 
+        if (userService.registerUser(email, password, name)) {
+            System.out.println("Пользователь успешно зарегистрирован");
+        } else {
+            System.out.println("Пользователь с таким email уже существует");
+        }
+    }
+
+    private void loginUser() {
+        System.out.println("Введите email:");
+        String email = scanner.nextLine();
+        System.out.println("Введите пароль:");
+        String password = scanner.nextLine();
+
+        User user = userService.login(email, password);
+        if (user != null) {
+            System.out.println("Вход выполнен успешно");
+            userMenu.show(user);
+        } else {
+            System.out.println("Неверный email или пароль");
+        }
+    }
 }
