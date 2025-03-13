@@ -27,10 +27,10 @@ public class NotificationMenu {
 
             switch (choice) {
                 case 1:
-                    notificationService.checkBudgetExceeded(user.getEmail());
+                    notificationService.checkBudgetExceeded(user.getEmail(), user.getEmail()); // Передаем email
                     break;
                 case 2:
-                    notificationService.checkGoalProgress(user.getEmail(), goalService);
+                    notificationService.checkGoalProgress(user.getEmail(), user.getEmail(), goalService); // Передаем email
                     break;
                 case 3:
                     return; // Возврат в главное меню

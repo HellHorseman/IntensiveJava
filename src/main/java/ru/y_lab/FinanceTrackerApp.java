@@ -10,7 +10,15 @@ public class FinanceTrackerApp {
         BudgetService budgetService = new BudgetService();
         GoalService goalService = new GoalService();
         AnalyticsService analyticsService = new AnalyticsService(transactionService);
-        NotificationService notificationService = new NotificationService(budgetService, transactionService);
+
+        // Настройки для EmailService
+        String smtpHost = "smtp.gmail.com"; // SMTP-сервер (например, для Gmail)
+        String smtpPort = "587"; // Порт для TLS
+        String emailUsername = "ваш_email@gmail.com"; // Ваш email
+        String emailPassword = "ваш_пароль"; // Ваш пароль от email
+
+        EmailService emailService = new EmailService(smtpHost, smtpPort, emailUsername, emailPassword);
+        NotificationService notificationService = new NotificationService(budgetService, transactionService, emailService);
 
         TransactionMenu transactionMenu = new TransactionMenu(transactionService);
         ProfileMenu profileMenu = new ProfileMenu(userService);
