@@ -6,16 +6,23 @@ import ru.y_lab.service.TransactionService;
 import java.util.Scanner;
 
 public class UserMenu {
-    private TransactionService transactionService;
-    private TransactionMenu transactionMenu;
-    private ProfileMenu profileMenu;
-    private BudgetMenu budgetMenu;
-    private GoalMenu goalMenu;
-    private AnalyticsMenu analyticsMenu;
-    private NotificationMenu notificationMenu;
-    private Scanner scanner;
+    private final TransactionService transactionService;
+    private final TransactionMenu transactionMenu;
+    private final ProfileMenu profileMenu;
+    private final BudgetMenu budgetMenu;
+    private final GoalMenu goalMenu;
+    private final AnalyticsMenu analyticsMenu;
+    private final NotificationMenu notificationMenu;
+    private final Scanner scanner;
 
-    public UserMenu(TransactionService transactionService, TransactionMenu transactionMenu, ProfileMenu profileMenu, BudgetMenu budgetMenu, GoalMenu goalMenu, AnalyticsMenu analyticsMenu, NotificationMenu notificationMenu) {
+    public UserMenu(TransactionService transactionService,
+                    TransactionMenu transactionMenu,
+                    ProfileMenu profileMenu,
+                    BudgetMenu budgetMenu,
+                    GoalMenu goalMenu,
+                    AnalyticsMenu analyticsMenu,
+                    NotificationMenu notificationMenu,
+                    Scanner scanner) {
         this.transactionService = transactionService;
         this.transactionMenu = transactionMenu;
         this.profileMenu = profileMenu;
@@ -23,7 +30,7 @@ public class UserMenu {
         this.goalMenu = goalMenu;
         this.analyticsMenu = analyticsMenu;
         this.notificationMenu = notificationMenu;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User user) {

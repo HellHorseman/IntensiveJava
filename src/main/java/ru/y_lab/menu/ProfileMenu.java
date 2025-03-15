@@ -7,12 +7,12 @@ import ru.y_lab.service.UserService;
 import java.util.Scanner;
 
 public class ProfileMenu {
-    private UserService userService;
-    private Scanner scanner;
+    private final UserService userService;
+    private final Scanner scanner;
 
-    public ProfileMenu(UserService userService) {
+    public ProfileMenu(UserService userService, Scanner scanner) {
         this.userService = userService;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User user) {

@@ -9,14 +9,14 @@ import ru.y_lab.service.TransactionService;
 import java.util.Scanner;
 
 public class BudgetMenu {
-    private BudgetService budgetService;
-    private TransactionService transactionService;
-    private Scanner scanner;
+    private final BudgetService budgetService;
+    private final TransactionService transactionService;
+    private final Scanner scanner;
 
-    public BudgetMenu(BudgetService budgetService, TransactionService transactionService) {
+    public BudgetMenu(BudgetService budgetService, TransactionService transactionService, Scanner scanner) {
         this.budgetService = budgetService;
         this.transactionService = transactionService;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User user) {

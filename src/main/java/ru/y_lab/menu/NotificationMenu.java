@@ -7,14 +7,14 @@ import ru.y_lab.service.NotificationService;
 import java.util.Scanner;
 
 public class NotificationMenu {
-    private NotificationService notificationService;
-    private GoalService goalService;
-    private Scanner scanner;
+    private final NotificationService notificationService;
+    private final GoalService goalService;
+    private final Scanner scanner;
 
-    public NotificationMenu(NotificationService notificationService, GoalService goalService) {
+    public NotificationMenu(NotificationService notificationService, GoalService goalService, Scanner scanner) {
         this.notificationService = notificationService;
         this.goalService = goalService;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User user) {

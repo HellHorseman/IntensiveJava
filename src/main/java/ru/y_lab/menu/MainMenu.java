@@ -6,16 +6,16 @@ import ru.y_lab.service.UserService;
 import java.util.Scanner;
 
 public class MainMenu {
-    private UserService userService;
-    private UserMenu userMenu;
-    private AdminMenu adminMenu;
-    private Scanner scanner;
+    private final UserService userService;
+    private final UserMenu userMenu;
+    private final AdminMenu adminMenu;
+    private final Scanner scanner;
 
-    public MainMenu(UserService userService, UserMenu userMenu, AdminMenu adminMenu) {
+    public MainMenu(UserService userService, UserMenu userMenu, AdminMenu adminMenu, Scanner scanner) {
         this.userService = userService;
         this.userMenu = userMenu;
         this.adminMenu = adminMenu;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show() {

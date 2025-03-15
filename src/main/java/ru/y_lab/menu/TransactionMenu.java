@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TransactionMenu {
-    private TransactionService transactionService;
-    private Scanner scanner;
+    private final TransactionService transactionService;
+    private final Scanner scanner;
 
-    public TransactionMenu(TransactionService transactionService) {
+    public TransactionMenu(TransactionService transactionService, Scanner scanner) {
         this.transactionService = transactionService;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User user) {

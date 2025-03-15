@@ -6,12 +6,12 @@ import ru.y_lab.service.AnalyticsService;
 import java.util.Scanner;
 
 public class AnalyticsMenu {
-    private AnalyticsService analyticsService;
-    private Scanner scanner;
+    private final AnalyticsService analyticsService;
+    private final Scanner scanner;
 
-    public AnalyticsMenu(AnalyticsService analyticsService) {
+    public AnalyticsMenu(AnalyticsService analyticsService, Scanner scanner) {
         this.analyticsService = analyticsService;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User user) {

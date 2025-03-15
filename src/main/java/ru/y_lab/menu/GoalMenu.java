@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class GoalMenu {
-    private GoalService goalService;
-    private Scanner scanner;
+    private final GoalService goalService;
+    private final Scanner scanner;
 
-    public GoalMenu(GoalService goalService) {
+    public GoalMenu(GoalService goalService, Scanner scanner) {
         this.goalService = goalService;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User user) {

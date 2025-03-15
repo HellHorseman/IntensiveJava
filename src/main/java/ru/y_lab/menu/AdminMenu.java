@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class AdminMenu {
-    private UserService userService;
-    private TransactionService transactionService;
-    private Scanner scanner;
+    private final UserService userService;
+    private final TransactionService transactionService;
+    private final Scanner scanner;
 
-    public AdminMenu(UserService userService, TransactionService transactionService) {
+    public AdminMenu(UserService userService, TransactionService transactionService, Scanner scanner) {
         this.userService = userService;
         this.transactionService = transactionService;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     public void show(User admin) {
@@ -71,14 +71,15 @@ public class AdminMenu {
         List<Transaction> transactions = transactionService.getTransactions(email);
         if (transactions.isEmpty()) {
             System.out.println("Транзакции не найдены.");
-        } else {
-            for (Transaction transaction : transactions) {
-                System.out.println("ID: " + transaction.getId() +
-                        ", Сумма: " + transaction.getAmount() +
-                        ", Категория: " + transaction.getCategory() +
-                        ", Дата: " + transaction.getDate() +
-                        ", Тип: " + transaction.getType());
-            }
+            return;
+        }
+
+        for (Transaction transaction : transactions) {
+            System.out.println("ID: " + transaction.getId() +
+                    ", Сумма: " + transaction.getAmount() +
+                    ", Категория: " + transaction.getCategory() +
+                    ", Дата: " + transaction.getDate() +
+                    ", Тип: " + transaction.getType());
         }
     }
 
