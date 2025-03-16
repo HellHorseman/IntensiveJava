@@ -1,29 +1,36 @@
 package ru.y_lab.service;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import ru.y_lab.model.User;
+import ru.y_lab.repository.UserRepository;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class UserService {
-    private Map<String, User> users;
-
-    public UserService() {
-        users = new HashMap<>();
-    }
+    private UserRepository userRepository;
 
     // Регистрация пользователя с указанием роли
     public boolean registerUser(String email, String password, String name, boolean isAdmin) {
-        if (users.containsKey(email)) {
-            return false;
+        User existingUser = userRepository.findByEmail(email);
+        if (existingUser != null) {
+            return false; // Пользователь с таким email уже существует
         }
-        users.put(email, new User(email, password, name, isAdmin));
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setName(name);
+        newUser.setAdmin(isAdmin);
+        userRepository.save(newUser);
         return true;
     }
 
     // Вход в систему
     public User login(String email, String password) {
-        User user = users.get(email);
+        User user = userRepository.findByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
             return user;
         }
@@ -32,10 +39,11 @@ public class UserService {
 
     // Обновление данных пользователя
     public boolean updateUser(String email, String newName, String newPassword) {
-        User user = users.get(email);
+        User user = userRepository.findByEmail(email);
         if (user != null) {
             user.setName(newName);
             user.setPassword(newPassword);
+            userRepository.update(user);
             return true;
         }
         return false;
@@ -43,11 +51,10 @@ public class UserService {
 
     // Обновление email пользователя
     public boolean updateUserEmail(String oldEmail, String newEmail) {
-        User user = users.get(oldEmail);
+        User user = userRepository.findByEmail(oldEmail);
         if (user != null) {
-            users.remove(oldEmail);
             user.setEmail(newEmail);
-            users.put(newEmail, user);
+            userRepository.update(user);
             return true;
         }
         return false;
@@ -55,14 +62,16 @@ public class UserService {
 
     // Получение списка всех пользователей
     public Map<String, User> getAllUsers() {
-        return users;
+        List<User> users = userRepository.findAll();
+        return users.stream().collect(Collectors.toMap(User::getEmail, user -> user));
     }
 
     // Блокировка/разблокировка пользователя
     public boolean toggleUserBlock(String email) {
-        User user = users.get(email);
+        User user = userRepository.findByEmail(email);
         if (user != null) {
             user.setAdmin(!user.isAdmin()); // Пример блокировки через изменение роли
+            userRepository.update(user);
             return true;
         }
         return false;
@@ -70,7 +79,12 @@ public class UserService {
 
     // Удаление пользователя
     public boolean deleteUser(String email) {
-        return users.remove(email) != null;
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            userRepository.delete(user.getId());
+            return true;
+        }
+        return false;
     }
 }
 

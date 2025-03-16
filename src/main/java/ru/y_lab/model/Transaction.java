@@ -13,7 +13,7 @@ public class Transaction {
     private Long id;
     private Long userId;
     private BigDecimal amount;
-    private String category;
+    private Long categoryId;
     private LocalDate date;
     private String description;
     private TransactionType type;

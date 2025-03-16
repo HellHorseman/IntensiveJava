@@ -1,74 +1,55 @@
 package ru.y_lab.service;
 
+import lombok.AllArgsConstructor;
+import ru.y_lab.enums.TransactionType;
 import ru.y_lab.model.Transaction;
 
-import java.util.HashMap;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class AnalyticsService {
     private TransactionService transactionService;
 
-    public AnalyticsService(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
-
-    public double calculateBalance(String userId) {
+    // Расчёт баланса
+    public BigDecimal calculateBalance(Long userId) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
-        double balance = 0.0;
-        for (Transaction transaction : transactions) {
-            if (transaction.getType().equals("income")) {
-                balance += transaction.getAmount();
-            } else if (transaction.getType().equals("expense")) {
-                balance -= transaction.getAmount();
-            }
-        }
-        return balance;
+        return transactions.stream()
+                .map(transaction -> transaction.getType() == TransactionType.INCOME ? transaction.getAmount() : transaction.getAmount().negate())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // Расчёт суммарного дохода за период
-    public double calculateTotalIncome(String userId, String startDate, String endDate) {
+    public BigDecimal calculateTotalIncome(Long userId, LocalDate startDate, LocalDate endDate) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
-        double totalIncome = 0.0;
-        for (Transaction transaction : transactions) {
-            if (transaction.getType().equals("income") &&
-                    transaction.getDate().compareTo(startDate) >= 0 &&
-                    transaction.getDate().compareTo(endDate) <= 0) {
-                totalIncome += transaction.getAmount();
-            }
-        }
-        return totalIncome;
+        return transactions.stream()
+                .filter(transaction -> transaction.getType() == TransactionType.INCOME)
+                .filter(transaction -> !transaction.getDate().isBefore(startDate) && !transaction.getDate().isAfter(endDate))
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // Расчёт суммарного расхода за период
-    public double calculateTotalExpense(String userId, String startDate, String endDate) {
+    public BigDecimal calculateTotalExpense(Long userId, LocalDate startDate, LocalDate endDate) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
-        double totalExpense = 0.0;
-        for (Transaction transaction : transactions) {
-            if (transaction.getType().equals("expense") &&
-                    transaction.getDate().compareTo(startDate) >= 0 &&
-                    transaction.getDate().compareTo(endDate) <= 0) {
-                totalExpense += transaction.getAmount();
-            }
-        }
-        return totalExpense;
+        return transactions.stream()
+                .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
+                .filter(transaction -> !transaction.getDate().isBefore(startDate) && !transaction.getDate().isAfter(endDate))
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // Анализ расходов по категориям
-    public void analyzeExpensesByCategory(String userId) {
+    public Map<String, BigDecimal> analyzeExpensesByCategory(Long userId) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
-        Map<String, Double> categoryExpenses = new HashMap<>();
-
-        for (Transaction transaction : transactions) {
-            if (transaction.getType().equals("expense")) {
-                categoryExpenses.put(transaction.getCategory(),
-                        categoryExpenses.getOrDefault(transaction.getCategory(), 0.0) + transaction.getAmount());
-            }
-        }
-
-        System.out.println("Анализ расходов по категориям:");
-        for (Map.Entry<String, Double> entry : categoryExpenses.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
+        return transactions.stream()
+                .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
+                .collect(Collectors.groupingBy(
+                        Transaction::getCategoryId,
+                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
+                );
     }
 }

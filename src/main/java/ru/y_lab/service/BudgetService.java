@@ -1,34 +1,49 @@
 package ru.y_lab.service;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import ru.y_lab.model.Budget;
+import ru.y_lab.repository.BudgetRepository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
 
+@AllArgsConstructor
 public class BudgetService {
-    private Map<String, Budget> budgets;
+    private BudgetRepository budgetRepository;
 
-    public BudgetService() {
-        budgets = new HashMap<>();
-    }
+    // Установка месячного бюджета
+    public boolean setMonthlyBudget(Long userId, BigDecimal monthlyBudget) {
+        Budget budget = new Budget();
+        budget.setUserId(userId);
+        budget.setMonthlyBudget(monthlyBudget);
 
-    public boolean setMonthlyBudget(String userId, double monthlyBudget) {
-        budgets.put(userId, new Budget(userId, monthlyBudget));
+        budgetRepository.save(budget);
         return true;
     }
 
-    public Budget getBudget(String userId) {
-        return budgets.get(userId);
+    // Получение бюджета пользователя
+    public Budget getBudget(Long userId) {
+        return budgetRepository.findByUserId(userId);
     }
 
-    public boolean updateMonthlyBudget(String userId, double monthlyBudget) {
-        Budget budget = budgets.get(userId);
+    // Обновление месячного бюджета
+    public boolean updateMonthlyBudget(Long userId, BigDecimal monthlyBudget) {
+        Budget budget = budgetRepository.findByUserId(userId);
         if (budget != null) {
             budget.setMonthlyBudget(monthlyBudget);
+            budgetRepository.update(budget);
+            return true;
+        }
+        return false;
+    }
+
+    // Удаление бюджета
+    public boolean deleteBudget(Long userId) {
+        Budget budget = budgetRepository.findByUserId(userId);
+        if (budget != null) {
+            budgetRepository.delete(budget.getId());
             return true;
         }
         return false;
     }
 }
-
-

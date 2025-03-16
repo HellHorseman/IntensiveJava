@@ -3,10 +3,23 @@ databaseChangelog:
       id: 3
       author: HellHorseman
       changes:
+        - createSequence:
+            sequenceName: budget_id_seq
+            schemaName: finance
+            startValue: 1
+            incrementBy: 1
+
         - createTable:
             tableName: budget
             schemaName: finance
             columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueSequenceNext: finance.budget_id_seq
+                  constrains:
+                    primaryKey: true
+                    nullable: false
               - column:
                   name: user_id
                   type: BIGINT

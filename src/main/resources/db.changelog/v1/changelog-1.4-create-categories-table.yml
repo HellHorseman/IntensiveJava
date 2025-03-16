@@ -3,6 +3,12 @@ databaseChangeLog:
       id: 5
       author: HellHorseman
       changes:
+        - createSequence:
+            sequenceName: category_id_seq
+            schemaName: finance
+            startValue: 1
+            incrementBy: 1
+
         - createTable:
             tableName: categories
             schemaName: finance
@@ -10,7 +16,7 @@ databaseChangeLog:
               - column:
                   name: id
                   type: BIGINT
-                  autoIncrement: true
+                  defaultValueSequenceNext: finance.category_id_seq
                   constraints:
                     primaryKey: true
                     nullable: false

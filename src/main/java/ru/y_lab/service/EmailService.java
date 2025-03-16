@@ -1,22 +1,18 @@
 package ru.y_lab.service;
 
+import lombok.AllArgsConstructor;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+@AllArgsConstructor
 public class EmailService {
     private String host; // SMTP-сервер
     private String port; // Порт SMTP-сервера
     private String username; // Логин от почты
     private String password; // Пароль от почты
-
-    public EmailService(String host, String port, String username, String password) {
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
-    }
 
     // Метод для отправки email
     public void sendEmail(String to, String subject, String text) {
