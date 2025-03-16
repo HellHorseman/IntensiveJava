@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 public class Budget {
-    private String userId;
+    private Long userId;
     private BigDecimal monthlyBudget;
 
 }

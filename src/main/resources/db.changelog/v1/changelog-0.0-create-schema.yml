@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - preConditions:
+      - onFail: MARK_RAN
+      - not:
+          - schemaExists:
+              schemaName: liquibase_schema
+
+  - changeSet:
+      id: 0
+      author: HellHorseman
+      changes:
+        - createSchema:
+            schemaName: liquibase_schema

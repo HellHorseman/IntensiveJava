@@ -1,0 +1,44 @@
+databaseChangelog:
+  - changeSet:
+      id: 1
+      author: HellHorseman
+      changes:
+        - createSequence:
+              sequenceName: users_id_seq
+              schemaName: finance
+              startValue: 1
+              incrementBy: 1
+
+        - createTable:
+            tableName: users
+            schemaName: finance
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueSequenceNext: finance.users_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: isAdmin
+                  type: BOOLEAN
+                  defaultValue: false
+                  constraints:
+                    nullable: false

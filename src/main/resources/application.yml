@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/finance_db
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.yaml
+  enabled: true
+  default-schema: finance
+  liquibase-schema: liquibase_schema

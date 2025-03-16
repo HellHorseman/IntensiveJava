@@ -1,0 +1,19 @@
+databaseChangelog:
+  - changeSet:
+      id: 3
+      author: HellHorseman
+      changes:
+        - createTable:
+            tableName: budget
+            schemaName: finance
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_budgets_user
+                    references: finance.users(id)
+              - column:
+                  name: monthly_budget
+                  type: DECIMAL(19, 2)

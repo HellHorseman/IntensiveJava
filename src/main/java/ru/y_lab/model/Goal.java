@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 public class Goal {
-    private String id;
-    private String userId;
+    private Long id;
+    private Long userId;
     private String name;
     private BigDecimal targetAmount;
     private BigDecimal currentAmount;

@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: HellHorseman
+      changes:
+        - createTable:
+            tableName: categories
+            schemaName: finance
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false

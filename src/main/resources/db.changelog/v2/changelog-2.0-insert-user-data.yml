@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - changeSet:
+      id: 6
+      author: HellHorseman
+      changes:
+        - insert:
+            tableName: users
+            schemaName: finance
+            columns:
+              - column:
+                  name: email
+                  value: admin@example.com
+              - column:
+                  name: password
+                  value: admin
+              - column:
+                  name: name
+                  value: admin
+              - column:
+                  name: is_admin
+                  value: true
+
+        - insert:
+            tableName: categories
+            schemaName: finance
+            columns:
+              - column:
+                  name: name
+                  value: Food
+              - column:
+                  name: name
+                  value: Transport
+              - column:
+                  name: name
+                  value: Entertainment
+
+        - insert:
+            tableName: budgets
+            schemaName: finance
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: monthly_budget
+                  value: 1000.00
+
+        - insert:
+            tableName: goals
+            schemaName: finance
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: name
+                  value: New Car
+              - column:
+                  name: target_amount
+                  value: 20000.00
+              - column:
+                  name: current_amount
+                  value: 5000.00
+
+        - insert:
+            tableName: transactions
+            schemaName: finance
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: amount
+                  value: 50.00
+              - column:
+                  name: category_id
+                  value: 1
+              - column:
+                  name: date
+                  value: 2023-10-01
+              - column:
+                  name: description
+                  value: Groceries
+              - column:
+                  name: type
+                  value: EXPENSE
