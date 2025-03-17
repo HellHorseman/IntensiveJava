@@ -7,22 +7,31 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+/**
+ * Сервис для отправки электронных писем.
+ * Использует SMTP-сервер для отправки сообщений.
+ */
 @AllArgsConstructor
 public class EmailService {
-    private String host; // SMTP-сервер
-    private String port; // Порт SMTP-сервера
-    private String username; // Логин от почты
-    private String password; // Пароль от почты
+    private String host;
+    private String port;
+    private String username;
+    private String password;
 
-    // Метод для отправки email
+    /**
+     * Отправляет электронное письмо.
+     *
+     * @param to      Адрес получателя.
+     * @param subject Тема письма.
+     * @param text    Текст письма.
+     */
     public void sendEmail(String to, String subject, String text) {
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", port);
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true"); // Используем TLS для безопасности
+        props.put("mail.smtp.starttls.enable", "true");
 
-        // Создаем сессию с аутентификацией
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -31,14 +40,12 @@ public class EmailService {
         });
 
         try {
-            // Создаем сообщение
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(username)); // Отправитель
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to)); // Получатель
-            message.setSubject(subject); // Тема письма
-            message.setText(text); // Текст письма
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            message.setSubject(subject);
+            message.setText(text);
 
-            // Отправляем сообщение
             Transport.send(message);
             System.out.println("Email отправлен успешно на адрес: " + to);
         } catch (MessagingException e) {

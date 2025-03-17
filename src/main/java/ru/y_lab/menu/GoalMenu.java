@@ -1,20 +1,18 @@
 package ru.y_lab.menu;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.User;
 import ru.y_lab.model.Goal;
 import ru.y_lab.service.GoalService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class GoalMenu {
     private final GoalService goalService;
     private final Scanner scanner;
-
-    public GoalMenu(GoalService goalService, Scanner scanner) {
-        this.goalService = goalService;
-        this.scanner = scanner;
-    }
 
     public void show(User user) {
         while (true) {
@@ -54,7 +52,7 @@ public class GoalMenu {
         double targetAmount = scanner.nextDouble();
         scanner.nextLine();
 
-        if (goalService.addGoal(user.getEmail(), name, targetAmount)) {
+        if (goalService.addGoal(user.getId(), name, BigDecimal.valueOf(targetAmount))) {
             System.out.println("Цель успешно добавлена");
         } else {
             System.out.println("Ошибка при добавлении цели");
@@ -62,7 +60,7 @@ public class GoalMenu {
     }
 
     private void viewGoals(User user) {
-        List<Goal> goals = goalService.getGoals(user.getEmail());
+        List<Goal> goals = goalService.getGoals(user.getId());
         for (Goal goal : goals) {
             System.out.println("ID: " + goal.getId() +
                     ", Название: " + goal.getName() +
@@ -73,7 +71,8 @@ public class GoalMenu {
 
     private void editGoal(User user) {
         System.out.println("Введите ID цели:");
-        String id = scanner.nextLine();
+        Long id = scanner.nextLong();
+        scanner.nextLine();
         System.out.println("Введите новое название:");
         String name = scanner.nextLine();
         System.out.println("Введите новую целевую сумму:");
@@ -83,7 +82,7 @@ public class GoalMenu {
         double currentAmount = scanner.nextDouble();
         scanner.nextLine();
 
-        if (goalService.updateGoal(id, name, targetAmount, currentAmount)) {
+        if (goalService.updateGoal(id, name, BigDecimal.valueOf(targetAmount), BigDecimal.valueOf(currentAmount))) {
             System.out.println("Цель успешно обновлена");
         } else {
             System.out.println("Ошибка при обновлении цели");
@@ -92,7 +91,8 @@ public class GoalMenu {
 
     private void deleteGoal(User user) {
         System.out.println("Введите ID цели:");
-        String id = scanner.nextLine();
+        Long id = scanner.nextLong();
+        scanner.nextLine();
 
         if (goalService.deleteGoal(id)) {
             System.out.println("Цель успешно удалена");

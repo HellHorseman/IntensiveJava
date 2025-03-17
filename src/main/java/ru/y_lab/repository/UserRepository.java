@@ -9,7 +9,7 @@ import java.util.List;
 
 public class UserRepository {
     public void save(User user) {
-        String sql = "INSERT INTO finance.users (email, password, name, is_admin) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (email, password, name, is_admin) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -26,7 +26,7 @@ public class UserRepository {
     }
 
     public User findByEmail(String email) {
-        String sql = "SELECT * FROM finance.users WHERE email = ?";
+        String sql = "SELECT * FROM users WHERE email = ?";
         User user = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -50,8 +50,33 @@ public class UserRepository {
         return user;
     }
 
+    public User findById(Long id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        User user = null;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getLong("id"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                user.setName(resultSet.getString("name"));
+                user.setAdmin(resultSet.getBoolean("is_admin"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Ошибка SQL " + e.getMessage());
+        }
+
+        return user;
+    }
+
     public List<User> findAll() {
-        String sql = "SELECT * FROM finance.users";
+        String sql = "SELECT * FROM users";
         List<User> users = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -76,7 +101,7 @@ public class UserRepository {
     }
 
     public void update(User user) {
-        String sql = "UPDATE finance.users SET email = ?, password = ?, name = ?, is_admin = ? WHERE id = ?";
+        String sql = "UPDATE users SET email = ?, password = ?, name = ?, is_admin = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -94,7 +119,7 @@ public class UserRepository {
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM finance.users WHERE id = ?";
+        String sql = "DELETE FROM users WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

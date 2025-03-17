@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CategoryRepository {
     public void save(Category category) {
-        String sql = "INSERT INTO finance.categories (name) VALUES (?)";
+        String sql = "INSERT INTO categories (name) VALUES (?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -22,7 +22,7 @@ public class CategoryRepository {
     }
 
     public List<Category> findAll() {
-        String sql = "SELECT * FROM finance.categories";
+        String sql = "SELECT * FROM categories";
         List<Category> categories = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -44,7 +44,7 @@ public class CategoryRepository {
     }
 
     public void update(Category category) {
-        String sql = "UPDATE finance.categories SET name = ? WHERE id = ?";
+        String sql = "UPDATE categories SET name = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -59,7 +59,7 @@ public class CategoryRepository {
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM finance.categories WHERE id = ?";
+        String sql = "DELETE FROM categories WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

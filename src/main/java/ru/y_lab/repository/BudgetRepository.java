@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class BudgetRepository {
     public void save(Budget budget) {
-        String sql = "INSERT INTO finance.budgets (user_id, monthly_budget) VALUES (?, ?)";
+        String sql = "INSERT INTO budgets (user_id, monthly_budget) VALUES (?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -22,7 +22,7 @@ public class BudgetRepository {
     }
 
     public Budget findByUserId(Long userId) {
-        String sql = "SELECT * FROM finance.budgets WHERE user_id = ?";
+        String sql = "SELECT * FROM budgets WHERE user_id = ?";
         Budget budget = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -45,7 +45,7 @@ public class BudgetRepository {
     }
 
     public void update(Budget budget) {
-        String sql = "UPDATE finance.budgets SET monthly_budget = ? WHERE id = ?";
+        String sql = "UPDATE budgets SET monthly_budget = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -60,7 +60,7 @@ public class BudgetRepository {
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM finance.budgets WHERE id = ?";
+        String sql = "DELETE FROM budgets WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

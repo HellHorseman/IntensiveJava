@@ -1,23 +1,19 @@
 package ru.y_lab.menu;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.Budget;
 import ru.y_lab.model.User;
-import ru.y_lab.model.Transaction;
 import ru.y_lab.service.BudgetService;
-import ru.y_lab.service.TransactionService;
+import ru.y_lab.service.NotificationService;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class BudgetMenu {
     private final BudgetService budgetService;
-    private final TransactionService transactionService;
+    private final NotificationService notificationService;
     private final Scanner scanner;
-
-    public BudgetMenu(BudgetService budgetService, TransactionService transactionService, Scanner scanner) {
-        this.budgetService = budgetService;
-        this.transactionService = transactionService;
-        this.scanner = scanner;
-    }
 
     public void show(User user) {
         while (true) {
@@ -40,7 +36,7 @@ public class BudgetMenu {
                     updateMonthlyBudget(user);
                     break;
                 case 4:
-                    checkBudgetExceeded(user);
+                    notificationService.checkBudgetExceeded(user.getId(), user.getEmail());
                     break;
                 case 5:
                     return;
@@ -54,12 +50,12 @@ public class BudgetMenu {
         System.out.println("Введите месячный бюджет:");
         double monthlyBudget = scanner.nextDouble();
         scanner.nextLine();
-        budgetService.setMonthlyBudget(user.getEmail(), monthlyBudget);
+        budgetService.setMonthlyBudget(user.getId(), BigDecimal.valueOf(monthlyBudget));
         System.out.println("Месячный бюджет успешно установлен");
     }
 
     private void viewCurrentBudget(User user) {
-        Budget budget = budgetService.getBudget(user.getEmail());
+        Budget budget = budgetService.getBudget(user.getId());
         if (budget != null) {
             System.out.println("Ваш текущий месячный бюджет: " + budget.getMonthlyBudget());
         } else {
@@ -71,29 +67,10 @@ public class BudgetMenu {
         System.out.println("Введите новый месячный бюджет:");
         double monthlyBudget = scanner.nextDouble();
         scanner.nextLine();
-        if (budgetService.updateMonthlyBudget(user.getEmail(), monthlyBudget)) {
+        if (budgetService.updateMonthlyBudget(user.getId(), BigDecimal.valueOf(monthlyBudget))) {
             System.out.println("Месячный бюджет успешно обновлен");
         } else {
             System.out.println("Ошибка при обновлении бюджета");
-        }
-    }
-
-    private void checkBudgetExceeded(User user) {
-        Budget budget = budgetService.getBudget(user.getEmail());
-        if (budget == null) {
-            System.out.println("Бюджет не установлен");
-            return;
-        }
-
-        double totalExpenses = transactionService.getTransactions(user.getEmail()).stream()
-                .filter(t -> t.getType().equals("expense"))
-                .mapToDouble(Transaction::getAmount)
-                .sum();
-
-        if (totalExpenses > budget.getMonthlyBudget()) {
-            System.out.println("Внимание! Вы превысили месячный бюджет.");
-        } else {
-            System.out.println("Вы в пределах бюджета.");
         }
     }
 }

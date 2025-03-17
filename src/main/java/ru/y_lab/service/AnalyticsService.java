@@ -10,11 +10,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для аналитики финансовых данных.
+ * Предоставляет методы для расчета баланса, доходов, расходов и анализа по категориям.
+ */
 @AllArgsConstructor
 public class AnalyticsService {
     private TransactionService transactionService;
 
-    // Расчёт баланса
+    /**
+     * Рассчитывает баланс пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Баланс пользователя.
+     */
     public BigDecimal calculateBalance(Long userId) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
         return transactions.stream()
@@ -22,7 +31,14 @@ public class AnalyticsService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Расчёт суммарного дохода за период
+    /**
+     * Рассчитывает суммарный доход за указанный период.
+     *
+     * @param userId    Идентификатор пользователя.
+     * @param startDate Начальная дата периода.
+     * @param endDate   Конечная дата периода.
+     * @return Суммарный доход за период.
+     */
     public BigDecimal calculateTotalIncome(Long userId, LocalDate startDate, LocalDate endDate) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
         return transactions.stream()
@@ -32,7 +48,14 @@ public class AnalyticsService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Расчёт суммарного расхода за период
+    /**
+     * Рассчитывает суммарный расход за указанный период.
+     *
+     * @param userId    Идентификатор пользователя.
+     * @param startDate Начальная дата периода.
+     * @param endDate   Конечная дата периода.
+     * @return Суммарный расход за период.
+     */
     public BigDecimal calculateTotalExpense(Long userId, LocalDate startDate, LocalDate endDate) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
         return transactions.stream()
@@ -42,14 +65,19 @@ public class AnalyticsService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Анализ расходов по категориям
-    public Map<String, BigDecimal> analyzeExpensesByCategory(Long userId) {
+    /**
+     * Анализирует расходы по категориям.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Карта, где ключ — идентификатор категории, а значение — сумма расходов по этой категории.
+     */
+    public Map<Long, BigDecimal> analyzeExpensesByCategory(Long userId) {
         List<Transaction> transactions = transactionService.getTransactions(userId);
         return transactions.stream()
                 .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
                 .collect(Collectors.groupingBy(
                         Transaction::getCategoryId,
                         Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
-                );
+                ));
     }
 }

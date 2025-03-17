@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TransactionRepository {
     public void save(Transaction transaction) {
-        String sql = "INSERT INTO finance.transactions (user_id, amount, category_id, date, description, type) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO transactions (user_id, amount, category_id, date, description, type) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -29,7 +29,7 @@ public class TransactionRepository {
     }
 
     public List<Transaction> findByUserId(Long userId) {
-        String sql = "SELECT * FROM finance.transactions WHERE user_id = ?";
+        String sql = "SELECT * FROM transactions WHERE user_id = ?";
         List<Transaction> transactions = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -58,7 +58,7 @@ public class TransactionRepository {
     }
 
     public void update(Transaction transaction) {
-        String sql = "UPDATE finance.transactions SET amount = ?, category_id = ?, date = ?, description = ?, type = ? WHERE id = ?";
+        String sql = "UPDATE transactions SET amount = ?, category_id = ?, date = ?, description = ?, type = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -77,7 +77,7 @@ public class TransactionRepository {
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM finance.transactions WHERE id = ?";
+        String sql = "DELETE FROM transactions WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

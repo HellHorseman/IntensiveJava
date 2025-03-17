@@ -7,28 +7,52 @@ import ru.y_lab.repository.GoalRepository;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Сервис для управления целями пользователей.
+ * Предоставляет методы для добавления, обновления, удаления и получения целей.
+ */
 @AllArgsConstructor
 public class GoalService {
     private GoalRepository goalRepository;
 
-    // Добавление новой цели
+    /**
+     * Добавляет новую цель.
+     *
+     * @param userId      Идентификатор пользователя.
+     * @param name        Название цели.
+     * @param targetAmount Целевая сумма.
+     * @return {@code true}, если цель добавлена успешно.
+     */
     public boolean addGoal(Long userId, String name, BigDecimal targetAmount) {
         Goal goal = new Goal();
         goal.setUserId(userId);
         goal.setName(name);
         goal.setTargetAmount(targetAmount);
-        goal.setCurrentAmount(BigDecimal.ZERO); // Начальное значение текущей суммы
+        goal.setCurrentAmount(BigDecimal.ZERO);
 
         goalRepository.save(goal);
         return true;
     }
 
-    // Получение всех целей пользователя
+    /**
+     * Возвращает список всех целей пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Список целей.
+     */
     public List<Goal> getGoals(Long userId) {
         return goalRepository.findByUserId(userId);
     }
 
-    // Обновление цели
+    /**
+     * Обновляет существующую цель.
+     *
+     * @param goalId        Идентификатор цели.
+     * @param name          Новое название цели.
+     * @param targetAmount  Новая целевая сумма.
+     * @param currentAmount Текущая сумма.
+     * @return {@code true}, если цель обновлена успешно.
+     */
     public boolean updateGoal(Long goalId, String name, BigDecimal targetAmount, BigDecimal currentAmount) {
         Goal goal = new Goal();
         goal.setId(goalId);
@@ -40,7 +64,12 @@ public class GoalService {
         return true;
     }
 
-    // Удаление цели
+    /**
+     * Удаляет цель.
+     *
+     * @param goalId Идентификатор цели.
+     * @return {@code true}, если цель удалена успешно.
+     */
     public boolean deleteGoal(Long goalId) {
         goalRepository.delete(goalId);
         return true;

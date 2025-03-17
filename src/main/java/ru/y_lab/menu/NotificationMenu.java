@@ -1,21 +1,15 @@
 package ru.y_lab.menu;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.User;
-import ru.y_lab.service.GoalService;
 import ru.y_lab.service.NotificationService;
 
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class NotificationMenu {
     private final NotificationService notificationService;
-    private final GoalService goalService;
     private final Scanner scanner;
-
-    public NotificationMenu(NotificationService notificationService, GoalService goalService, Scanner scanner) {
-        this.notificationService = notificationService;
-        this.goalService = goalService;
-        this.scanner = scanner;
-    }
 
     public void show(User user) {
         while (true) {
@@ -27,10 +21,10 @@ public class NotificationMenu {
 
             switch (choice) {
                 case 1:
-                    notificationService.checkBudgetExceeded(user.getEmail(), user.getEmail());
+                    notificationService.checkBudgetExceeded(user.getId(), user.getEmail());
                     break;
                 case 2:
-                    notificationService.checkGoalProgress(user.getEmail(), user.getEmail(), goalService);
+                    notificationService.checkGoalProgress(user.getId(), user.getEmail());
                     break;
                 case 3:
                     return;

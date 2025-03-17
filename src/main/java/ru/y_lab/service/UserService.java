@@ -9,15 +9,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления пользователями.
+ * Предоставляет методы для регистрации, входа, обновления и удаления пользователей.
+ */
 @AllArgsConstructor
 public class UserService {
     private UserRepository userRepository;
 
-    // Регистрация пользователя с указанием роли
+    /**
+     * Регистрирует нового пользователя.
+     *
+     * @param email    Электронная почта пользователя.
+     * @param password Пароль пользователя.
+     * @param name     Имя пользователя.
+     * @param isAdmin  Флаг, указывающий, является ли пользователь администратором.
+     * @return {@code true}, если регистрация прошла успешно, иначе {@code false}.
+     */
     public boolean registerUser(String email, String password, String name, boolean isAdmin) {
         User existingUser = userRepository.findByEmail(email);
         if (existingUser != null) {
-            return false; // Пользователь с таким email уже существует
+            return false;
         }
         User newUser = new User();
         newUser.setEmail(email);
@@ -28,7 +40,13 @@ public class UserService {
         return true;
     }
 
-    // Вход в систему
+    /**
+     * Выполняет вход пользователя в систему.
+     *
+     * @param email    Электронная почта пользователя.
+     * @param password Пароль пользователя.
+     * @return Объект пользователя, если вход выполнен успешно, иначе {@code null}.
+     */
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
@@ -37,7 +55,14 @@ public class UserService {
         return null;
     }
 
-    // Обновление данных пользователя
+    /**
+     * Обновляет данные пользователя.
+     *
+     * @param email       Электронная почта пользователя.
+     * @param newName     Новое имя пользователя.
+     * @param newPassword Новый пароль пользователя.
+     * @return {@code true}, если обновление прошло успешно, иначе {@code false}.
+     */
     public boolean updateUser(String email, String newName, String newPassword) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
@@ -49,7 +74,13 @@ public class UserService {
         return false;
     }
 
-    // Обновление email пользователя
+    /**
+     * Обновляет электронную почту пользователя.
+     *
+     * @param oldEmail Старая электронная почта пользователя.
+     * @param newEmail Новая электронная почта пользователя.
+     * @return {@code true}, если обновление прошло успешно, иначе {@code false}.
+     */
     public boolean updateUserEmail(String oldEmail, String newEmail) {
         User user = userRepository.findByEmail(oldEmail);
         if (user != null) {
@@ -60,31 +91,65 @@ public class UserService {
         return false;
     }
 
-    // Получение списка всех пользователей
+    /**
+     * Возвращает список всех пользователей.
+     *
+     * @return Карта, где ключ — электронная почта пользователя, а значение — объект пользователя.
+     */
     public Map<String, User> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream().collect(Collectors.toMap(User::getEmail, user -> user));
     }
 
-    // Блокировка/разблокировка пользователя
-    public boolean toggleUserBlock(String email) {
-        User user = userRepository.findByEmail(email);
+    /**
+     * Блокирует или разблокирует пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return {@code true}, если операция прошла успешно, иначе {@code false}.
+     */
+    public boolean toggleUserBlock(Long userId) {
+        User user = userRepository.findById(userId);
         if (user != null) {
-            user.setAdmin(!user.isAdmin()); // Пример блокировки через изменение роли
+            user.setAdmin(!user.isAdmin());
             userRepository.update(user);
             return true;
         }
         return false;
     }
 
-    // Удаление пользователя
-    public boolean deleteUser(String email) {
-        User user = userRepository.findByEmail(email);
+    /**
+     * Удаляет пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return {@code true}, если удаление прошло успешно, иначе {@code false}.
+     */
+    public boolean deleteUser(Long userId) {
+        User user = userRepository.findById(userId);
         if (user != null) {
             userRepository.delete(user.getId());
             return true;
         }
         return false;
+    }
+
+    /**
+     * Находит пользователя по email.
+     *
+     * @param email Электронная почта пользователя.
+     * @return Объект пользователя, если найден, иначе {@code null}.
+     */
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    /**
+     * Находит пользователя по ID.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Объект пользователя, если найден, иначе {@code null}.
+     */
+    public User findById(Long userId) {
+        return userRepository.findById(userId);
     }
 }
 

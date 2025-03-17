@@ -1,5 +1,6 @@
 package ru.y_lab.menu;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.Transaction;
 import ru.y_lab.model.User;
 import ru.y_lab.service.TransactionService;
@@ -9,16 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class AdminMenu {
     private final UserService userService;
     private final TransactionService transactionService;
     private final Scanner scanner;
-
-    public AdminMenu(UserService userService, TransactionService transactionService, Scanner scanner) {
-        this.userService = userService;
-        this.transactionService = transactionService;
-        this.scanner = scanner;
-    }
 
     public void show(User admin) {
         if (!admin.isAdmin()) {
@@ -67,8 +63,13 @@ public class AdminMenu {
     private void viewUserTransactions() {
         System.out.println("Введите email пользователя:");
         String email = scanner.nextLine();
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            System.out.println("Пользователь не найден.");
+            return;
+        }
 
-        List<Transaction> transactions = transactionService.getTransactions(email);
+        List<Transaction> transactions = transactionService.getTransactions(user.getId());
         if (transactions.isEmpty()) {
             System.out.println("Транзакции не найдены.");
             return;
@@ -77,7 +78,7 @@ public class AdminMenu {
         for (Transaction transaction : transactions) {
             System.out.println("ID: " + transaction.getId() +
                     ", Сумма: " + transaction.getAmount() +
-                    ", Категория: " + transaction.getCategory() +
+                    ", Категория ID: " + transaction.getCategoryId() +
                     ", Дата: " + transaction.getDate() +
                     ", Тип: " + transaction.getType());
         }
@@ -86,22 +87,32 @@ public class AdminMenu {
     private void toggleUserBlock() {
         System.out.println("Введите email пользователя:");
         String email = scanner.nextLine();
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            System.out.println("Пользователь не найден.");
+            return;
+        }
 
-        if (userService.toggleUserBlock(email)) {
+        if (userService.toggleUserBlock(user.getId())) {
             System.out.println("Статус пользователя изменен.");
         } else {
-            System.out.println("Пользователь не найден.");
+            System.out.println("Ошибка при изменении статуса.");
         }
     }
 
     private void deleteUser() {
         System.out.println("Введите email пользователя:");
         String email = scanner.nextLine();
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            System.out.println("Пользователь не найден.");
+            return;
+        }
 
-        if (userService.deleteUser(email)) {
+        if (userService.deleteUser(user.getId())) {
             System.out.println("Пользователь успешно удален.");
         } else {
-            System.out.println("Пользователь не найден.");
+            System.out.println("Ошибка при удалении пользователя.");
         }
     }
 }

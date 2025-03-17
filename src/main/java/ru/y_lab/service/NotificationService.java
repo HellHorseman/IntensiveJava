@@ -8,6 +8,10 @@ import ru.y_lab.model.Transaction;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Сервис для отправки уведомлений пользователям.
+ * Предоставляет методы для проверки превышения бюджета и прогресса по целям.
+ */
 @AllArgsConstructor
 public class NotificationService {
     private BudgetService budgetService;
@@ -15,7 +19,12 @@ public class NotificationService {
     private GoalService goalService;
     private EmailService emailService;
 
-    // Проверка превышения бюджета
+    /**
+     * Проверяет, превышен ли месячный бюджет пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @param email  Электронная почта пользователя для отправки уведомления.
+     */
     public void checkBudgetExceeded(Long userId, String email) {
         Budget budget = budgetService.getBudget(userId);
         if (budget == null) {
@@ -34,13 +43,18 @@ public class NotificationService {
                     totalExpenses, budget.getMonthlyBudget()
             );
             System.out.println(message);
-            emailService.sendEmail(email, "Превышение бюджета", message); // Отправляем email
+            emailService.sendEmail(email, "Превышение бюджета", message);
         } else {
             System.out.println("Вы в пределах бюджета.");
         }
     }
 
-    // Уведомление о прогрессе по целям
+    /**
+     * Проверяет прогресс по целям пользователя и отправляет уведомления.
+     *
+     * @param userId Идентификатор пользователя.
+     * @param email  Электронная почта пользователя для отправки уведомления.
+     */
     public void checkGoalProgress(Long userId, String email) {
         List<Goal> goals = goalService.getGoals(userId);
         if (goals.isEmpty()) {
@@ -57,15 +71,20 @@ public class NotificationService {
             System.out.println(message);
 
             if (progressPercentage.compareTo(new BigDecimal("100")) >= 0) {
-                emailService.sendEmail(email, "Достигнут прогресс по цели", message); // Отправляем email
+                emailService.sendEmail(email, "Достигнут прогресс по цели", message);
             }
         }
     }
 
-    // Расчет прогресса по цели в процентах
+    /**
+     * Рассчитывает прогресс по цели в процентах.
+     *
+     * @param goal Цель для расчета прогресса.
+     * @return Прогресс в процентах.
+     */
     private BigDecimal calculateProgressPercentage(Goal goal) {
         if (goal.getTargetAmount().compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.ZERO; // Избегаем деления на ноль
+            return BigDecimal.ZERO;
         }
         return goal.getCurrentAmount()
                 .divide(goal.getTargetAmount(), 4, BigDecimal.ROUND_HALF_UP)

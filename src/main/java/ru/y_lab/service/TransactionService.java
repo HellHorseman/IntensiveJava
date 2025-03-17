@@ -9,12 +9,26 @@ import ru.y_lab.repository.TransactionRepository;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Сервис для управления транзакциями.
+ * Предоставляет методы для добавления, редактирования, удаления и получения транзакций.
+ */
 @AllArgsConstructor
 public class TransactionService {
     private TransactionRepository transactionRepository;
     private CategoryRepository categoryRepository;
 
-    // Добавление новой транзакции
+    /**
+     * Добавляет новую транзакцию.
+     *
+     * @param userId      Идентификатор пользователя.
+     * @param amount      Сумма транзакции.
+     * @param categoryId  Идентификатор категории.
+     * @param date        Дата транзакции в формате строки (yyyy-MM-dd).
+     * @param description Описание транзакции.
+     * @param type        Тип транзакции (доход или расход).
+     * @return {@code true}, если транзакция добавлена успешно.
+     */
     public boolean addTransaction(Long userId, BigDecimal amount, Long categoryId, String date, String description, String type) {
         Transaction transaction = new Transaction();
         transaction.setUserId(userId);
@@ -28,12 +42,25 @@ public class TransactionService {
         return true;
     }
 
-    // Получение всех транзакций пользователя
+    /**
+     * Возвращает список всех транзакций пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Список транзакций.
+     */
     public List<Transaction> getTransactions(Long userId) {
         return transactionRepository.findByUserId(userId);
     }
 
-    // Редактирование транзакции
+    /**
+     * Редактирует существующую транзакцию.
+     *
+     * @param transactionId Идентификатор транзакции.
+     * @param amount        Новая сумма транзакции.
+     * @param categoryId    Новый идентификатор категории.
+     * @param description   Новое описание транзакции.
+     * @return {@code true}, если транзакция обновлена успешно.
+     */
     public boolean editTransaction(Long transactionId, BigDecimal amount, Long categoryId, String description) {
         Transaction transaction = new Transaction();
         transaction.setId(transactionId);
@@ -45,7 +72,12 @@ public class TransactionService {
         return true;
     }
 
-    // Удаление транзакции
+    /**
+     * Удаляет транзакцию.
+     *
+     * @param transactionId Идентификатор транзакции.
+     * @return {@code true}, если транзакция удалена успешно.
+     */
     public boolean deleteTransaction(Long transactionId) {
         transactionRepository.delete(transactionId);
         return true;

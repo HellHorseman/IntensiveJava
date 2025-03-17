@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GoalRepository {
     public void save(Goal goal) {
-        String sql = "INSERT INTO finance.goals (user_id, name, target_amount, current_amount) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO goals (user_id, name, target_amount, current_amount) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -26,7 +26,7 @@ public class GoalRepository {
     }
 
     public List<Goal> findByUserId(Long userId) {
-        String sql = "SELECT * FROM finance.goals WHERE user_id = ?";
+        String sql = "SELECT * FROM goals WHERE user_id = ?";
         List<Goal> goals = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -53,7 +53,7 @@ public class GoalRepository {
     }
 
     public void update(Goal goal) {
-        String sql = "UPDATE finance.goals SET name = ?, target_amount = ?, current_amount = ? WHERE id = ?";
+        String sql = "UPDATE goals SET name = ?, target_amount = ?, current_amount = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -70,7 +70,7 @@ public class GoalRepository {
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM finance.goals WHERE id = ?";
+        String sql = "DELETE FROM goals WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
