@@ -87,7 +87,7 @@ public class ProfileMenu {
         String password = scanner.nextLine();
 
         if (user.getPassword().equals(password)) {
-            if (userService.deleteUser(user.getEmail())) {
+            if (userService.deleteUser(user.getId())) {
                 System.out.println("Аккаунт успешно удален");
             } else {
                 System.out.println("Ошибка при удалении аккаунта");
