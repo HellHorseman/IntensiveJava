@@ -8,6 +8,7 @@ import ru.y_lab.service.UserService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 @AllArgsConstructor
@@ -63,13 +64,16 @@ public class AdminMenu {
     private void viewUserTransactions() {
         System.out.println("Введите email пользователя:");
         String email = scanner.nextLine();
-        User user = userService.findByEmail(email);
-        if (user == null) {
+        Optional<User> userOptional = userService.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
             System.out.println("Пользователь не найден.");
             return;
         }
 
+        User user = userOptional.get();
         List<Transaction> transactions = transactionService.getTransactions(user.getId());
+
         if (transactions.isEmpty()) {
             System.out.println("Транзакции не найдены.");
             return;
@@ -87,12 +91,14 @@ public class AdminMenu {
     private void toggleUserBlock() {
         System.out.println("Введите email пользователя:");
         String email = scanner.nextLine();
-        User user = userService.findByEmail(email);
-        if (user == null) {
+        Optional<User> userOptional = userService.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
             System.out.println("Пользователь не найден.");
             return;
         }
 
+        User user = userOptional.get();
         if (userService.toggleUserBlock(user.getId())) {
             System.out.println("Статус пользователя изменен.");
         } else {
@@ -103,12 +109,14 @@ public class AdminMenu {
     private void deleteUser() {
         System.out.println("Введите email пользователя:");
         String email = scanner.nextLine();
-        User user = userService.findByEmail(email);
-        if (user == null) {
+        Optional<User> userOptional = userService.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
             System.out.println("Пользователь не найден.");
             return;
         }
 
+        User user = userOptional.get();
         if (userService.deleteUser(user.getId())) {
             System.out.println("Пользователь успешно удален.");
         } else {

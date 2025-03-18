@@ -1,11 +1,13 @@
 package ru.y_lab.menu;
 
 import lombok.AllArgsConstructor;
+import ru.y_lab.enums.TransactionType;
 import ru.y_lab.model.Transaction;
 import ru.y_lab.model.User;
 import ru.y_lab.service.TransactionService;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -53,13 +55,13 @@ public class TransactionMenu {
         Long categoryId = scanner.nextLong();
         scanner.nextLine();
         System.out.println("Введите дату (YYYY-MM-DD):");
-        String date = scanner.nextLine();
+        LocalDate date = LocalDate.parse(scanner.nextLine());
         System.out.println("Введите описание:");
         String description = scanner.nextLine();
         System.out.println("Введите тип (income/expense):");
         String type = scanner.nextLine();
 
-        if (transactionService.addTransaction(user.getId(), BigDecimal.valueOf(amount), categoryId, date, description, type)) {
+        if (transactionService.addTransaction(user.getId(), BigDecimal.valueOf(amount), categoryId, date, description, TransactionType.valueOf(type))) {
             System.out.println("Транзакция успешно добавлена");
         } else {
             System.out.println("Ошибка при добавлении транзакции");
