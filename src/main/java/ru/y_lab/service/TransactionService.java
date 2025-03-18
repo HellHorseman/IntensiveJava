@@ -7,6 +7,7 @@ import ru.y_lab.repository.CategoryRepository;
 import ru.y_lab.repository.TransactionRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -16,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 public class TransactionService {
     private TransactionRepository transactionRepository;
-    private CategoryRepository categoryRepository;
 
     /**
      * Добавляет новую транзакцию.
@@ -24,19 +24,19 @@ public class TransactionService {
      * @param userId      Идентификатор пользователя.
      * @param amount      Сумма транзакции.
      * @param categoryId  Идентификатор категории.
-     * @param date        Дата транзакции в формате строки (yyyy-MM-dd).
+     * @param date        Дата транзакции.
      * @param description Описание транзакции.
-     * @param type        Тип транзакции (доход или расход).
+     * @param type        Тип транзакции (доход/расход).
      * @return {@code true}, если транзакция добавлена успешно.
      */
-    public boolean addTransaction(Long userId, BigDecimal amount, Long categoryId, String date, String description, String type) {
+    public boolean addTransaction(Long userId, BigDecimal amount, Long categoryId, LocalDate date, String description, TransactionType type) {
         Transaction transaction = new Transaction();
         transaction.setUserId(userId);
         transaction.setAmount(amount);
         transaction.setCategoryId(categoryId);
-        transaction.setDate(java.time.LocalDate.parse(date));
+        transaction.setDate(date);
         transaction.setDescription(description);
-        transaction.setType(TransactionType.valueOf(type));
+        transaction.setType(type);
 
         transactionRepository.save(transaction);
         return true;

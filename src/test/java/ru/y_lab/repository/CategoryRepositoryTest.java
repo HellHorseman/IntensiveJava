@@ -34,8 +34,7 @@ public class CategoryRepositoryTest {
                 postgres.getUsername(),
                 postgres.getPassword()
         );
-
-        categoryRepository = new CategoryRepository();
+        categoryRepository = new CategoryRepository(connection);
     }
 
     @Test

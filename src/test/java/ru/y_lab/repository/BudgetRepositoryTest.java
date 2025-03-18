@@ -35,7 +35,7 @@ public class BudgetRepositoryTest {
                 postgres.getPassword()
         );
 
-        budgetRepository = new BudgetRepository();
+        budgetRepository = new BudgetRepository(connection);
     }
 
     @Test

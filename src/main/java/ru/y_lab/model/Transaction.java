@@ -1,5 +1,6 @@
 package ru.y_lab.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.y_lab.enums.TransactionType;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Transaction {
     private Long id;
     private Long userId;

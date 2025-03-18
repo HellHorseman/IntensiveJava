@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,7 +36,9 @@ public class UserRepositoryTest {
                 postgres.getPassword()
         );
 
-        userRepository = new UserRepository();
+        userRepository = new UserRepository(connection);
+
+        userRepository.findAll().forEach(user -> userRepository.delete(user.getId()));
     }
 
     @Test
@@ -49,9 +52,9 @@ public class UserRepositoryTest {
 
         userRepository.save(user);
 
-        User foundUser = userRepository.findByEmail("test@example.com");
-        assertNotNull(foundUser);
-        assertEquals("test@example.com", foundUser.getEmail());
+        Optional<User> foundUser = userRepository.findByEmail("test@example.com");
+        assertTrue(foundUser.isPresent());
+        assertEquals("test@example.com", foundUser.get().getEmail());
     }
 
     @Test
@@ -65,9 +68,9 @@ public class UserRepositoryTest {
 
         userRepository.save(user);
 
-        User foundUser = userRepository.findByEmail("test@example.com");
-        assertNotNull(foundUser);
-        assertEquals("Test User", foundUser.getName());
+        Optional<User> foundUser = userRepository.findByEmail("test@example.com");
+        assertTrue(foundUser.isPresent());
+        assertEquals("Test User", foundUser.get().getName());
     }
 
     @Test
@@ -81,11 +84,12 @@ public class UserRepositoryTest {
 
         userRepository.save(user);
 
-        User foundUser = userRepository.findByEmail("test@example.com");
-        User userById = userRepository.findById(foundUser.getId());
+        Optional<User> foundUser = userRepository.findByEmail("test@example.com");
+        assertTrue(foundUser.isPresent());
 
-        assertNotNull(userById);
-        assertEquals(foundUser.getId(), userById.getId());
+        Optional<User> userById = userRepository.findById(foundUser.get().getId());
+        assertTrue(userById.isPresent());
+        assertEquals(foundUser.get().getId(), userById.get().getId());
     }
 
     @Test
@@ -99,12 +103,15 @@ public class UserRepositoryTest {
 
         userRepository.save(user);
 
-        User foundUser = userRepository.findByEmail("test@example.com");
-        foundUser.setName("Updated User");
-        userRepository.update(foundUser);
+        Optional<User> foundUser = userRepository.findByEmail("test@example.com");
+        assertTrue(foundUser.isPresent());
 
-        User updatedUser = userRepository.findByEmail("test@example.com");
-        assertEquals("Updated User", updatedUser.getName());
+        foundUser.get().setName("Updated User");
+        userRepository.update(foundUser.get());
+
+        Optional<User> updatedUser = userRepository.findByEmail("test@example.com");
+        assertTrue(updatedUser.isPresent());
+        assertEquals("Updated User", updatedUser.get().getName());
     }
 
     @Test
@@ -118,11 +125,13 @@ public class UserRepositoryTest {
 
         userRepository.save(user);
 
-        User foundUser = userRepository.findByEmail("test@example.com");
-        userRepository.delete(foundUser.getId());
+        Optional<User> foundUser = userRepository.findByEmail("test@example.com");
+        assertTrue(foundUser.isPresent());
 
-        User deletedUser = userRepository.findByEmail("test@example.com");
-        assertNull(deletedUser);
+        userRepository.delete(foundUser.get().getId());
+
+        Optional<User> deletedUser = userRepository.findByEmail("test@example.com");
+        assertFalse(deletedUser.isPresent());
     }
 
     @Test

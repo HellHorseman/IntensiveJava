@@ -36,7 +36,7 @@ public class GoalRepositoryTest {
                 postgres.getPassword()
         );
 
-        goalRepository = new GoalRepository();
+        goalRepository = new GoalRepository(connection);
     }
 
     @Test

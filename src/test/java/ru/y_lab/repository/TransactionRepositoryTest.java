@@ -29,16 +29,17 @@ public class TransactionRepositoryTest {
             .withPassword("testpass");
 
     private TransactionRepository transactionRepository;
+    private Connection connection;
 
     @BeforeEach
     void setUp() throws SQLException {
-        Connection connection = DriverManager.getConnection(
+        connection = DriverManager.getConnection(
                 postgres.getJdbcUrl(),
                 postgres.getUsername(),
                 postgres.getPassword()
         );
 
-        transactionRepository = new TransactionRepository();
+        transactionRepository = new TransactionRepository(connection);
     }
 
     @Test
@@ -67,7 +68,7 @@ public class TransactionRepositoryTest {
         transaction1.setAmount(BigDecimal.valueOf(100.50));
         transaction1.setCategoryId(2L);
         transaction1.setDate(LocalDate.now());
-        transaction1.setDescription("Покупка продуктов");
+        transaction1.setDescription("Обед");
         transaction1.setType(TransactionType.EXPENSE);
 
         Transaction transaction2 = new Transaction();
@@ -75,7 +76,7 @@ public class TransactionRepositoryTest {
         transaction2.setAmount(BigDecimal.valueOf(200.00));
         transaction2.setCategoryId(3L);
         transaction2.setDate(LocalDate.now());
-        transaction2.setDescription("Оплата аренды");
+        transaction2.setDescription("Ужин");
         transaction2.setType(TransactionType.EXPENSE);
 
         transactionRepository.save(transaction1);
@@ -93,19 +94,18 @@ public class TransactionRepositoryTest {
         transaction.setAmount(BigDecimal.valueOf(100.50));
         transaction.setCategoryId(2L);
         transaction.setDate(LocalDate.now());
-        transaction.setDescription("Покупка продуктов");
+        transaction.setDescription("Обед");
         transaction.setType(TransactionType.EXPENSE);
 
         transactionRepository.save(transaction);
 
+        transaction.setAmount(BigDecimal.valueOf(150.00));
+        transaction.setDescription("Перекус");
+        transactionRepository.update(transaction);
+
         List<Transaction> transactions = transactionRepository.findByUserId(1L);
-        Transaction savedTransaction = transactions.get(0);
-
-        savedTransaction.setDescription("Покупка напитков");
-        transactionRepository.update(savedTransaction);
-
-        List<Transaction> updatedTransactions = transactionRepository.findByUserId(1L);
-        assertEquals("Покупка напитков", updatedTransactions.get(0).getDescription());
+        assertEquals(BigDecimal.valueOf(150.00), transactions.get(0).getAmount());
+        assertEquals("Перекус", transactions.get(0).getDescription());
     }
 
     @Test
@@ -116,17 +116,15 @@ public class TransactionRepositoryTest {
         transaction.setAmount(BigDecimal.valueOf(100.50));
         transaction.setCategoryId(2L);
         transaction.setDate(LocalDate.now());
-        transaction.setDescription("Покупка продуктов");
+        transaction.setDescription("Обед");
         transaction.setType(TransactionType.EXPENSE);
 
         transactionRepository.save(transaction);
 
         List<Transaction> transactions = transactionRepository.findByUserId(1L);
-        Transaction savedTransaction = transactions.get(0);
+        assertFalse(transactions.isEmpty());
 
-        transactionRepository.delete(savedTransaction.getId());
-
-        List<Transaction> remainingTransactions = transactionRepository.findByUserId(1L);
-        assertTrue(remainingTransactions.isEmpty());
+        transactionRepository.delete(transactions.get(0).getId());
+        assertTrue(transactionRepository.findByUserId(1L).isEmpty());
     }
 }

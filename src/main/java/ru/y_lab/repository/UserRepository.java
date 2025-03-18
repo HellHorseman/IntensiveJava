@@ -6,128 +6,152 @@ import ru.y_lab.model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserRepository {
+    private final Connection connection;
+
+    public UserRepository(Connection connection) {
+        this.connection = connection;
+    }
+
+    public UserRepository() throws SQLException {
+        this.connection = DatabaseConnection.getConnection();
+    }
+
+    /**
+     * Сохраняет пользователя в базу данных.
+     *
+     * @param user Пользователь для сохранения.
+     * @throws RuntimeException Если произошла ошибка при сохранении.
+     */
     public void save(User user) {
         String sql = "INSERT INTO users (email, password, name, is_admin) VALUES (?, ?, ?, ?)";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, user.getEmail());
-            statement.setString(2, user.getPassword());
-            statement.setString(3, user.getName());
-            statement.setBoolean(4, user.isAdmin());
-
-            statement.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getName());
+            stmt.setBoolean(4, user.isAdmin());
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Ошибка SQL " + e.getMessage());
+            throw new RuntimeException("Ошибка при сохранении пользователя", e);
         }
     }
 
-    public User findByEmail(String email) {
+    /**
+     * Возвращает пользователя по email.
+     *
+     * @param email Email пользователя.
+     * @return Optional с пользователем, если найден.
+     * @throws RuntimeException Если произошла ошибка при поиске.
+     */
+    public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
-        User user = null;
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, email);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPassword(resultSet.getString("password"));
-                user.setName(resultSet.getString("name"));
-                user.setAdmin(resultSet.getBoolean("is_admin"));
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapResultSetToUser(rs));
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Ошибка SQL " + e.getMessage());
+            throw new RuntimeException("Ошибка при поиске пользователя по email", e);
         }
-
-        return user;
+        return Optional.empty();
     }
 
-    public User findById(Long id) {
+    /**
+     * Возвращает пользователя по ID.
+     *
+     * @param userId ID пользователя.
+     * @return Optional с пользователем, если найден.
+     * @throws RuntimeException Если произошла ошибка при поиске.
+     */
+    public Optional<User> findById(Long userId) {
         String sql = "SELECT * FROM users WHERE id = ?";
-        User user = null;
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPassword(resultSet.getString("password"));
-                user.setName(resultSet.getString("name"));
-                user.setAdmin(resultSet.getBoolean("is_admin"));
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapResultSetToUser(rs));
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Ошибка SQL " + e.getMessage());
+            throw new RuntimeException("Ошибка при поиске пользователя по ID", e);
         }
-
-        return user;
+        return Optional.empty();
     }
 
+    /**
+     * Возвращает список всех пользователей.
+     *
+     * @return Список всех пользователей.
+     * @throws RuntimeException Если произошла ошибка при поиске.
+     */
     public List<User> findAll() {
-        String sql = "SELECT * FROM users";
         List<User> users = new ArrayList<>();
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-
-            while (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPassword(resultSet.getString("password"));
-                user.setName(resultSet.getString("name"));
-                user.setAdmin(resultSet.getBoolean("is_admin"));
-
-                users.add(user);
+        String sql = "SELECT * FROM users";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
             }
         } catch (SQLException e) {
-            System.out.println("Ошибка SQL " + e.getMessage());
+            throw new RuntimeException("Ошибка при получении всех пользователей", e);
         }
-
         return users;
     }
 
+    /**
+     * Обновляет пользователя в базе данных.
+     *
+     * @param user Пользователь для обновления.
+     * @throws RuntimeException Если произошла ошибка при обновлении.
+     */
     public void update(User user) {
         String sql = "UPDATE users SET email = ?, password = ?, name = ?, is_admin = ? WHERE id = ?";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, user.getEmail());
-            statement.setString(2, user.getPassword());
-            statement.setString(3, user.getName());
-            statement.setBoolean(4, user.isAdmin());
-            statement.setLong(5, user.getId());
-
-            statement.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getName());
+            stmt.setBoolean(4, user.isAdmin());
+            stmt.setLong(5, user.getId());
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Ошибка SQL " + e.getMessage());
+            throw new RuntimeException("Ошибка при обновлении пользователя", e);
         }
     }
 
-    public void delete(Long id) {
+    /**
+     * Удаляет пользователя из базы данных по ID.
+     *
+     * @param userId ID пользователя.
+     * @throws RuntimeException Если произошла ошибка при удалении.
+     */
+    public void delete(Long userId) {
         String sql = "DELETE FROM users WHERE id = ?";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            statement.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, userId);
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Ошибка SQL " + e.getMessage());
+            throw new RuntimeException("Ошибка при удалении пользователя", e);
         }
+    }
+
+    /**
+     * Преобразует ResultSet в объект User.
+     *
+     * @param rs Результат запроса.
+     * @return Объект User.
+     * @throws SQLException Если произошла ошибка при чтении данных.
+     */
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getLong("id"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
+        user.setName(rs.getString("name"));
+        user.setAdmin(rs.getBoolean("is_admin"));
+        return user;
     }
 }

@@ -1,12 +1,12 @@
 package ru.y_lab.service;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import ru.y_lab.model.User;
 import ru.y_lab.repository.UserRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +27,7 @@ public class UserService {
      * @return {@code true}, если регистрация прошла успешно, иначе {@code false}.
      */
     public boolean registerUser(String email, String password, String name, boolean isAdmin) {
-        User existingUser = userRepository.findByEmail(email);
+        Optional<User> existingUser = this.findByEmail(email);
         if (existingUser != null) {
             return false;
         }
@@ -48,9 +48,9 @@ public class UserService {
      * @return Объект пользователя, если вход выполнен успешно, иначе {@code null}.
      */
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
+        Optional<User> user = this.findByEmail(email);
+        if (user.isPresent() && user.get().getPassword().equals(password)) {
+            return user.get();
         }
         return null;
     }
@@ -64,11 +64,12 @@ public class UserService {
      * @return {@code true}, если обновление прошло успешно, иначе {@code false}.
      */
     public boolean updateUser(String email, String newName, String newPassword) {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
-            user.setName(newName);
-            user.setPassword(newPassword);
-            userRepository.update(user);
+        Optional<User> user = this.findByEmail(email);
+        if (user.isPresent()) {
+            User updatedUser = user.get();
+            updatedUser.setName(newName);
+            updatedUser.setPassword(newPassword);
+            userRepository.update(updatedUser);
             return true;
         }
         return false;
@@ -82,10 +83,11 @@ public class UserService {
      * @return {@code true}, если обновление прошло успешно, иначе {@code false}.
      */
     public boolean updateUserEmail(String oldEmail, String newEmail) {
-        User user = userRepository.findByEmail(oldEmail);
-        if (user != null) {
-            user.setEmail(newEmail);
-            userRepository.update(user);
+        Optional<User> user = this.findByEmail(oldEmail);
+        if (user.isPresent()) {
+            User updatedUser = user.get();
+            updatedUser.setEmail(newEmail);
+            userRepository.update(updatedUser);
             return true;
         }
         return false;
@@ -108,10 +110,11 @@ public class UserService {
      * @return {@code true}, если операция прошла успешно, иначе {@code false}.
      */
     public boolean toggleUserBlock(Long userId) {
-        User user = userRepository.findById(userId);
-        if (user != null) {
-            user.setAdmin(!user.isAdmin());
-            userRepository.update(user);
+        Optional<User> user = this.findById(userId);
+        if (user.isPresent()) {
+            User updatedUser = user.get();
+            updatedUser.setAdmin(!updatedUser.isAdmin());
+            userRepository.update(updatedUser);
             return true;
         }
         return false;
@@ -124,9 +127,9 @@ public class UserService {
      * @return {@code true}, если удаление прошло успешно, иначе {@code false}.
      */
     public boolean deleteUser(Long userId) {
-        User user = userRepository.findById(userId);
-        if (user != null) {
-            userRepository.delete(user.getId());
+        Optional<User> user = this.findById(userId);
+        if (user.isPresent()) {
+            userRepository.delete(user.get().getId());
             return true;
         }
         return false;
@@ -138,7 +141,7 @@ public class UserService {
      * @param email Электронная почта пользователя.
      * @return Объект пользователя, если найден, иначе {@code null}.
      */
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -148,7 +151,7 @@ public class UserService {
      * @param userId Идентификатор пользователя.
      * @return Объект пользователя, если найден, иначе {@code null}.
      */
-    public User findById(Long userId) {
+    public Optional<User> findById(Long userId) {
         return userRepository.findById(userId);
     }
 }
