@@ -1,53 +1,77 @@
 package ru.y_lab.service;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.Goal;
+import ru.y_lab.repository.GoalRepository;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
+/**
+ * Сервис для управления целями пользователей.
+ * Предоставляет методы для добавления, обновления, удаления и получения целей.
+ */
+@AllArgsConstructor
 public class GoalService {
-    private List<Goal> goals;
+    private GoalRepository goalRepository;
 
-    public GoalService() {
-        goals = new ArrayList<>();
-    }
+    /**
+     * Добавляет новую цель.
+     *
+     * @param userId      Идентификатор пользователя.
+     * @param name        Название цели.
+     * @param targetAmount Целевая сумма.
+     * @return {@code true}, если цель добавлена успешно.
+     */
+    public boolean addGoal(Long userId, String name, BigDecimal targetAmount) {
+        Goal goal = new Goal();
+        goal.setUserId(userId);
+        goal.setName(name);
+        goal.setTargetAmount(targetAmount);
+        goal.setCurrentAmount(BigDecimal.ZERO);
 
-    public boolean addGoal(String userId, String name, double targetAmount) {
-        String id = UUID.randomUUID().toString();
-        goals.add(new Goal(id, userId, name, targetAmount, 0.0));
+        goalRepository.save(goal);
         return true;
     }
 
-    public List<Goal> getGoals(String userId) {
-        List<Goal> userGoals = new ArrayList<>();
-        for (Goal goal : goals) {
-            if (goal.getUserId().equals(userId)) {
-                userGoals.add(goal);
-            }
-        }
-        return userGoals;
+    /**
+     * Возвращает список всех целей пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Список целей.
+     */
+    public List<Goal> getGoals(Long userId) {
+        return goalRepository.findByUserId(userId);
     }
 
-    public boolean updateGoal(String goalId, String name, double targetAmount, double currentAmount) {
-        for (Goal goal : goals) {
-            if (goal.getId().equals(goalId)) {
-                goal.setName(name);
-                goal.setTargetAmount(targetAmount);
-                goal.setCurrentAmount(currentAmount);
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Обновляет существующую цель.
+     *
+     * @param goalId        Идентификатор цели.
+     * @param name          Новое название цели.
+     * @param targetAmount  Новая целевая сумма.
+     * @param currentAmount Текущая сумма.
+     * @return {@code true}, если цель обновлена успешно.
+     */
+    public boolean updateGoal(Long goalId, String name, BigDecimal targetAmount, BigDecimal currentAmount) {
+        Goal goal = new Goal();
+        goal.setId(goalId);
+        goal.setName(name);
+        goal.setTargetAmount(targetAmount);
+        goal.setCurrentAmount(currentAmount);
+
+        goalRepository.update(goal);
+        return true;
     }
 
-    public boolean deleteGoal(String goalId) {
-        for (Goal goal : goals) {
-            if (goal.getId().equals(goalId)) {
-                goals.remove(goal);
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Удаляет цель.
+     *
+     * @param goalId Идентификатор цели.
+     * @return {@code true}, если цель удалена успешно.
+     */
+    public boolean deleteGoal(Long goalId) {
+        goalRepository.delete(goalId);
+        return true;
     }
 }

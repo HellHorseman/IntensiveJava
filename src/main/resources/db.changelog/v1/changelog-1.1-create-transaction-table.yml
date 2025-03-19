@@ -1,0 +1,52 @@
+databaseChangelog:
+  - changeSet:
+      id: 2
+      author: HellHorseman
+      changes:
+        - createSequence:
+              sequenceName: transaction_id_seq
+              schemaName: finance
+              startValue: 1
+              incrementBy: 1
+
+        - createTable:
+            tableName: transaction
+            schemaName: finance
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueSequenceNext: finance.transaction_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transactions_user
+                    references: finance.users(id)
+              - column:
+                  name: amount
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transactions_category
+                    references: finance.categories(id)
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: type
+                  type: VARCHAR(50)

@@ -1,53 +1,85 @@
 package ru.y_lab.service;
 
+import lombok.AllArgsConstructor;
+import ru.y_lab.enums.TransactionType;
 import ru.y_lab.model.Transaction;
+import ru.y_lab.repository.CategoryRepository;
+import ru.y_lab.repository.TransactionRepository;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
+/**
+ * Сервис для управления транзакциями.
+ * Предоставляет методы для добавления, редактирования, удаления и получения транзакций.
+ */
+@AllArgsConstructor
 public class TransactionService {
-    private List<Transaction> transactions;
+    private TransactionRepository transactionRepository;
 
-    public TransactionService() {
-        transactions = new ArrayList<>();
-    }
+    /**
+     * Добавляет новую транзакцию.
+     *
+     * @param userId      Идентификатор пользователя.
+     * @param amount      Сумма транзакции.
+     * @param categoryId  Идентификатор категории.
+     * @param date        Дата транзакции.
+     * @param description Описание транзакции.
+     * @param type        Тип транзакции (доход/расход).
+     * @return {@code true}, если транзакция добавлена успешно.
+     */
+    public boolean addTransaction(Long userId, BigDecimal amount, Long categoryId, LocalDate date, String description, TransactionType type) {
+        Transaction transaction = new Transaction();
+        transaction.setUserId(userId);
+        transaction.setAmount(amount);
+        transaction.setCategoryId(categoryId);
+        transaction.setDate(date);
+        transaction.setDescription(description);
+        transaction.setType(type);
 
-    public boolean addTransaction(String userId, double amount, String category, String date, String description, String type) {
-        String id = UUID.randomUUID().toString();
-        transactions.add(new Transaction(id, userId, amount, category, date, description, type));
+        transactionRepository.save(transaction);
         return true;
     }
 
-    public List<Transaction> getTransactions(String userId) {
-        List<Transaction> userTransactions = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction.getUserId().equals(userId)) {
-                userTransactions.add(transaction);
-            }
-        }
-        return userTransactions;
+    /**
+     * Возвращает список всех транзакций пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Список транзакций.
+     */
+    public List<Transaction> getTransactions(Long userId) {
+        return transactionRepository.findByUserId(userId);
     }
 
-    public boolean editTransaction(String transactionId, double amount, String category, String description) {
-        for (Transaction transaction : transactions) {
-            if (transaction.getId().equals(transactionId)) {
-                transaction.setAmount(amount);
-                transaction.setCategory(category);
-                transaction.setDescription(description);
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Редактирует существующую транзакцию.
+     *
+     * @param transactionId Идентификатор транзакции.
+     * @param amount        Новая сумма транзакции.
+     * @param categoryId    Новый идентификатор категории.
+     * @param description   Новое описание транзакции.
+     * @return {@code true}, если транзакция обновлена успешно.
+     */
+    public boolean editTransaction(Long transactionId, BigDecimal amount, Long categoryId, String description) {
+        Transaction transaction = new Transaction();
+        transaction.setId(transactionId);
+        transaction.setAmount(amount);
+        transaction.setCategoryId(categoryId);
+        transaction.setDescription(description);
+
+        transactionRepository.update(transaction);
+        return true;
     }
 
-    public boolean deleteTransaction(String transactionId) {
-        for (Transaction transaction : transactions) {
-            if (transaction.getId().equals(transactionId)) {
-                transactions.remove(transaction);
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Удаляет транзакцию.
+     *
+     * @param transactionId Идентификатор транзакции.
+     * @return {@code true}, если транзакция удалена успешно.
+     */
+    public boolean deleteTransaction(Long transactionId) {
+        transactionRepository.delete(transactionId);
+        return true;
     }
 }

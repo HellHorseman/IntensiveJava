@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: HellHorseman
+      changes:
+        - createSequence:
+            sequenceName: category_id_seq
+            schemaName: finance
+            startValue: 1
+            incrementBy: 1
+
+        - createTable:
+            tableName: categories
+            schemaName: finance
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueSequenceNext: finance.category_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false

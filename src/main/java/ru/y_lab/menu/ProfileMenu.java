@@ -1,19 +1,16 @@
 package ru.y_lab.menu;
 
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.User;
 import ru.y_lab.service.UserService;
 
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class ProfileMenu {
     private final UserService userService;
     private final Scanner scanner;
-
-    public ProfileMenu(UserService userService, Scanner scanner) {
-        this.userService = userService;
-        this.scanner = scanner;
-    }
 
     public void show(User user) {
         while (true) {
@@ -90,7 +87,7 @@ public class ProfileMenu {
         String password = scanner.nextLine();
 
         if (user.getPassword().equals(password)) {
-            if (userService.deleteUser(user.getEmail())) {
+            if (userService.deleteUser(user.getId())) {
                 System.out.println("Аккаунт успешно удален");
             } else {
                 System.out.println("Ошибка при удалении аккаунта");

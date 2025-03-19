@@ -1,0 +1,45 @@
+databaseChangelog:
+  - changeSet:
+      id: 4
+      author: HellHorseman
+      changes:
+        - createSequence:
+              sequenceName: goal_id_seq
+              schemaName: finance
+              startValue: 1
+              incrementBy: 1
+
+        - createTable:
+            tableName: goal
+            schemaName: finance
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueSequenceNext: finance.goal_id_seq
+                  constrains:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constrains:
+                    nullable: false
+                    foreignKeyName: fk_goals_user
+                    references: finance.users(id)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: target_amount
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: current_amount
+                  type: DECIMAL(19, 2)
+                  defaultValue: 0.00
+                  constraints:
+                    nullable: false

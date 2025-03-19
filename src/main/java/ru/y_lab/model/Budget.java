@@ -1,24 +1,18 @@
 package ru.y_lab.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Budget {
-    private String userId;
-    private double monthlyBudget;
+    private Long id;
+    private Long userId;
+    private BigDecimal monthlyBudget;
 
-    public Budget(String userId, double monthlyBudget) {
-        this.userId = userId;
-        this.monthlyBudget = monthlyBudget;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public double getMonthlyBudget() {
-        return monthlyBudget;
-    }
-
-    public void setMonthlyBudget(double monthlyBudget) {
-        this.monthlyBudget = monthlyBudget;
-    }
 }
 

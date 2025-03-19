@@ -1,76 +1,158 @@
 package ru.y_lab.service;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.User;
+import ru.y_lab.repository.UserRepository;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления пользователями.
+ * Предоставляет методы для регистрации, входа, обновления и удаления пользователей.
+ */
+@AllArgsConstructor
 public class UserService {
-    private Map<String, User> users;
+    private UserRepository userRepository;
 
-    public UserService() {
-        users = new HashMap<>();
-    }
-
-    // Регистрация пользователя с указанием роли
+    /**
+     * Регистрирует нового пользователя.
+     *
+     * @param email    Электронная почта пользователя.
+     * @param password Пароль пользователя.
+     * @param name     Имя пользователя.
+     * @param isAdmin  Флаг, указывающий, является ли пользователь администратором.
+     * @return {@code true}, если регистрация прошла успешно, иначе {@code false}.
+     */
     public boolean registerUser(String email, String password, String name, boolean isAdmin) {
-        if (users.containsKey(email)) {
+        Optional<User> existingUser = this.findByEmail(email);
+        if (existingUser != null) {
             return false;
         }
-        users.put(email, new User(email, password, name, isAdmin));
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setName(name);
+        newUser.setAdmin(isAdmin);
+        userRepository.save(newUser);
         return true;
     }
 
-    // Вход в систему
+    /**
+     * Выполняет вход пользователя в систему.
+     *
+     * @param email    Электронная почта пользователя.
+     * @param password Пароль пользователя.
+     * @return Объект пользователя, если вход выполнен успешно, иначе {@code null}.
+     */
     public User login(String email, String password) {
-        User user = users.get(email);
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
+        Optional<User> user = this.findByEmail(email);
+        if (user.isPresent() && user.get().getPassword().equals(password)) {
+            return user.get();
         }
         return null;
     }
 
-    // Обновление данных пользователя
+    /**
+     * Обновляет данные пользователя.
+     *
+     * @param email       Электронная почта пользователя.
+     * @param newName     Новое имя пользователя.
+     * @param newPassword Новый пароль пользователя.
+     * @return {@code true}, если обновление прошло успешно, иначе {@code false}.
+     */
     public boolean updateUser(String email, String newName, String newPassword) {
-        User user = users.get(email);
-        if (user != null) {
-            user.setName(newName);
-            user.setPassword(newPassword);
+        Optional<User> user = this.findByEmail(email);
+        if (user.isPresent()) {
+            User updatedUser = user.get();
+            updatedUser.setName(newName);
+            updatedUser.setPassword(newPassword);
+            userRepository.update(updatedUser);
             return true;
         }
         return false;
     }
 
-    // Обновление email пользователя
+    /**
+     * Обновляет электронную почту пользователя.
+     *
+     * @param oldEmail Старая электронная почта пользователя.
+     * @param newEmail Новая электронная почта пользователя.
+     * @return {@code true}, если обновление прошло успешно, иначе {@code false}.
+     */
     public boolean updateUserEmail(String oldEmail, String newEmail) {
-        User user = users.get(oldEmail);
-        if (user != null) {
-            users.remove(oldEmail);
-            user.setEmail(newEmail);
-            users.put(newEmail, user);
+        Optional<User> user = this.findByEmail(oldEmail);
+        if (user.isPresent()) {
+            User updatedUser = user.get();
+            updatedUser.setEmail(newEmail);
+            userRepository.update(updatedUser);
             return true;
         }
         return false;
     }
 
-    // Получение списка всех пользователей
+    /**
+     * Возвращает список всех пользователей.
+     *
+     * @return Карта, где ключ — электронная почта пользователя, а значение — объект пользователя.
+     */
     public Map<String, User> getAllUsers() {
-        return users;
+        List<User> users = userRepository.findAll();
+        return users.stream().collect(Collectors.toMap(User::getEmail, user -> user));
     }
 
-    // Блокировка/разблокировка пользователя
-    public boolean toggleUserBlock(String email) {
-        User user = users.get(email);
-        if (user != null) {
-            user.setAdmin(!user.isAdmin()); // Пример блокировки через изменение роли
+    /**
+     * Блокирует или разблокирует пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return {@code true}, если операция прошла успешно, иначе {@code false}.
+     */
+    public boolean toggleUserBlock(Long userId) {
+        Optional<User> user = this.findById(userId);
+        if (user.isPresent()) {
+            User updatedUser = user.get();
+            updatedUser.setAdmin(!updatedUser.isAdmin());
+            userRepository.update(updatedUser);
             return true;
         }
         return false;
     }
 
-    // Удаление пользователя
-    public boolean deleteUser(String email) {
-        return users.remove(email) != null;
+    /**
+     * Удаляет пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return {@code true}, если удаление прошло успешно, иначе {@code false}.
+     */
+    public boolean deleteUser(Long userId) {
+        Optional<User> user = this.findById(userId);
+        if (user.isPresent()) {
+            userRepository.delete(user.get().getId());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Находит пользователя по email.
+     *
+     * @param email Электронная почта пользователя.
+     * @return Объект пользователя, если найден, иначе {@code null}.
+     */
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    /**
+     * Находит пользователя по ID.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Объект пользователя, если найден, иначе {@code null}.
+     */
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
     }
 }
 

@@ -1,22 +1,17 @@
 package ru.y_lab.menu;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.User;
 import ru.y_lab.service.UserService;
 
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class MainMenu {
     private final UserService userService;
     private final UserMenu userMenu;
     private final AdminMenu adminMenu;
     private final Scanner scanner;
-
-    public MainMenu(UserService userService, UserMenu userMenu, AdminMenu adminMenu, Scanner scanner) {
-        this.userService = userService;
-        this.userMenu = userMenu;
-        this.adminMenu = adminMenu;
-        this.scanner = scanner;
-    }
 
     public void show() {
         while (true) {

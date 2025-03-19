@@ -1,18 +1,18 @@
 package ru.y_lab.menu;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.User;
 import ru.y_lab.service.AnalyticsService;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class AnalyticsMenu {
     private final AnalyticsService analyticsService;
     private final Scanner scanner;
-
-    public AnalyticsMenu(AnalyticsService analyticsService, Scanner scanner) {
-        this.analyticsService = analyticsService;
-        this.scanner = scanner;
-    }
 
     public void show(User user) {
         while (true) {
@@ -46,31 +46,35 @@ public class AnalyticsMenu {
     }
 
     private void showBalance(User user) {
-        double balance = analyticsService.calculateBalance(user.getEmail());
+        BigDecimal balance = analyticsService.calculateBalance(user.getId());
         System.out.println("Ваш текущий баланс: " + balance);
     }
 
     private void showTotalIncome(User user) {
         System.out.println("Введите начальную дату (YYYY-MM-DD):");
-        String startDate = scanner.nextLine();
+        LocalDate startDate = LocalDate.parse(scanner.nextLine());
         System.out.println("Введите конечную дату (YYYY-MM-DD):");
-        String endDate = scanner.nextLine();
+        LocalDate endDate = LocalDate.parse(scanner.nextLine());
 
-        double totalIncome = analyticsService.calculateTotalIncome(user.getEmail(), startDate, endDate);
+        BigDecimal totalIncome = analyticsService.calculateTotalIncome(user.getId(), startDate, endDate);
         System.out.println("Суммарный доход за период: " + totalIncome);
     }
 
     private void showTotalExpense(User user) {
         System.out.println("Введите начальную дату (YYYY-MM-DD):");
-        String startDate = scanner.nextLine();
+        LocalDate startDate = LocalDate.parse(scanner.nextLine());
         System.out.println("Введите конечную дату (YYYY-MM-DD):");
-        String endDate = scanner.nextLine();
+        LocalDate endDate = LocalDate.parse(scanner.nextLine());
 
-        double totalExpense = analyticsService.calculateTotalExpense(user.getEmail(), startDate, endDate);
+        BigDecimal totalExpense = analyticsService.calculateTotalExpense(user.getId(), startDate, endDate);
         System.out.println("Суммарный расход за период: " + totalExpense);
     }
 
     private void analyzeExpensesByCategory(User user) {
-        analyticsService.analyzeExpensesByCategory(user.getEmail());
+        Map<Long, BigDecimal> expensesByCategory = analyticsService.analyzeExpensesByCategory(user.getId());
+        System.out.println("Расходы по категориям:");
+        expensesByCategory.forEach((categoryId, amount) ->
+                System.out.println("Категория ID " + categoryId + ": " + amount)
+        );
     }
 }

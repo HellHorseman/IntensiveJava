@@ -1,19 +1,35 @@
 package ru.y_lab.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.y_lab.enums.TransactionType;
 import ru.y_lab.model.Budget;
 import ru.y_lab.model.Goal;
 import ru.y_lab.model.Transaction;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
 
+@Testcontainers
+@DisplayName("Тесты для NotificationService с использованием Testcontainers")
 class NotificationServiceTest {
+
+    @Container
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13")
+            .withDatabaseName("testdb")
+            .withUsername("testuser")
+            .withPassword("testpass");
+
     @Mock
     private BudgetService budgetService;
 
@@ -31,63 +47,76 @@ class NotificationServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        notificationService = new NotificationService(budgetService, transactionService, emailService);
+        notificationService = new NotificationService(budgetService, transactionService, goalService, emailService);
     }
 
     @Test
-    void testCheckBudgetExceeded_WhenBudgetExceeded() {
-        when(budgetService.getBudget("user1@example.com")).thenReturn(new Budget("user1@example.com", 1000.0));
-        when(transactionService.getTransactions("user1@example.com")).thenReturn(Arrays.asList(
-                new Transaction("1", "user1@example.com", 600.0, "Food", "2023-10-01", "Groceries", "expense"),
-                new Transaction("2", "user1@example.com", 500.0, "Transport", "2023-10-02", "Bus fare", "expense")
+    @DisplayName("Проверка превышения бюджета: бюджет превышен")
+    void checkBudgetExceeded_WhenBudgetExceeded_ShouldSendEmail() {
+        Long userId = 1L;
+        String email = "user1@example.com";
+        when(budgetService.getBudget(userId)).thenReturn(new Budget(null, userId, new BigDecimal("1000.0")));
+        when(transactionService.getTransactions(userId)).thenReturn(Arrays.asList(
+                new Transaction(1L, userId, new BigDecimal("600.0"), 1L, LocalDate.of(2023, 10, 1), "Продукты", TransactionType.EXPENSE),
+                new Transaction(2L, userId, new BigDecimal("500.0"), 2L, LocalDate.of(2023, 10, 2), "Проезд", TransactionType.EXPENSE)
         ));
 
-        notificationService.checkBudgetExceeded("user1@example.com", "user1@example.com");
+        notificationService.checkBudgetExceeded(userId, email);
 
-        verify(emailService, times(1)).sendEmail(eq("user1@example.com"), eq("Превышение бюджета"), anyString());
+        verify(emailService, times(1)).sendEmail(eq(email), eq("Превышение бюджета"), anyString());
     }
 
     @Test
-    void testCheckBudgetExceeded_WhenBudgetNotExceeded() {
-        // Настройка моков
-        when(budgetService.getBudget("user1@example.com")).thenReturn(new Budget("user1@example.com", 1000.0));
-        when(transactionService.getTransactions("user1@example.com")).thenReturn(Arrays.asList(
-                new Transaction("1", "user1@example.com", 400.0, "Food", "2023-10-01", "Groceries", "expense"),
-                new Transaction("2", "user1@example.com", 300.0, "Transport", "2023-10-02", "Bus fare", "expense")
+    @DisplayName("Проверка превышения бюджета: бюджет не превышен")
+    void checkBudgetExceeded_WhenBudgetNotExceeded_ShouldNotSendEmail() {
+        Long userId = 1L;
+        String email = "user1@example.com";
+        when(budgetService.getBudget(userId)).thenReturn(new Budget(null, userId, new BigDecimal("1000.0")));
+        when(transactionService.getTransactions(userId)).thenReturn(Arrays.asList(
+                new Transaction(1L, userId, new BigDecimal("600.0"), 1L, LocalDate.of(2023, 10, 1), "Продукты", TransactionType.EXPENSE),
+                new Transaction(2L, userId, new BigDecimal("500.0"), 2L, LocalDate.of(2023, 10, 2), "Проезд", TransactionType.EXPENSE)
         ));
 
-        notificationService.checkBudgetExceeded("user1@example.com", "user1@example.com");
+        notificationService.checkBudgetExceeded(userId, email);
 
         verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
     }
 
     @Test
-    void testCheckBudgetExceeded_WhenBudgetNotSet() {
-        when(budgetService.getBudget("user1@example.com")).thenReturn(null);
+    @DisplayName("Проверка превышения бюджета: бюджет не установлен")
+    void checkBudgetExceeded_WhenBudgetNotSet_ShouldNotSendEmail() {
+        Long userId = 1L;
+        String email = "user1@example.com";
+        when(budgetService.getBudget(userId)).thenReturn(null);
 
-        notificationService.checkBudgetExceeded("user1@example.com", "user1@example.com");
+        notificationService.checkBudgetExceeded(userId, email);
 
         verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
     }
 
     @Test
-    void testCheckGoalProgress_WhenGoalsExist() {
-        // Настройка моков
-        when(goalService.getGoals("user1@example.com")).thenReturn(Arrays.asList(
-                new Goal("1", "user1@example.com", "Car", 20000.0, 5000.0),
-                new Goal("2", "user1@example.com", "Vacation", 5000.0, 2500.0)
+    @DisplayName("Проверка прогресса по целям: цели существуют")
+    void checkGoalProgress_WhenGoalsExist_ShouldNotSendEmail() {
+        Long userId = 1L;
+        String email = "user1@example.com";
+        when(goalService.getGoals(userId)).thenReturn(Arrays.asList(
+                new Goal(1L, userId, "Car", new BigDecimal("20000.0"), new BigDecimal("5000.0")),
+                new Goal(2L, userId, "Vacation", new BigDecimal("5000.0"), new BigDecimal("2500.0"))
         ));
 
-        notificationService.checkGoalProgress("user1@example.com", "user1@example.com", goalService);
+        notificationService.checkGoalProgress(userId, email);
 
         verify(emailService, times(0)).sendEmail(anyString(), eq("Достигнут прогресс по цели"), anyString());
     }
 
     @Test
-    void testCheckGoalProgress_WhenNoGoals() {
-        when(goalService.getGoals("user1@example.com")).thenReturn(List.of());
+    @DisplayName("Проверка прогресса по целям: цели отсутствуют")
+    void checkGoalProgress_WhenNoGoals_ShouldNotSendEmail() {
+        Long userId = 1L;
+        String email = "user1@example.com";
+        when(goalService.getGoals(userId)).thenReturn(List.of());
 
-        notificationService.checkGoalProgress("user1@example.com", "user1@example.com", goalService);
+        notificationService.checkGoalProgress(userId, email);
 
         verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
     }

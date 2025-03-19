@@ -1,10 +1,12 @@
 package ru.y_lab.menu;
 
+import lombok.AllArgsConstructor;
 import ru.y_lab.model.User;
 import ru.y_lab.service.TransactionService;
 
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class UserMenu {
     private final TransactionService transactionService;
     private final TransactionMenu transactionMenu;
@@ -14,24 +16,6 @@ public class UserMenu {
     private final AnalyticsMenu analyticsMenu;
     private final NotificationMenu notificationMenu;
     private final Scanner scanner;
-
-    public UserMenu(TransactionService transactionService,
-                    TransactionMenu transactionMenu,
-                    ProfileMenu profileMenu,
-                    BudgetMenu budgetMenu,
-                    GoalMenu goalMenu,
-                    AnalyticsMenu analyticsMenu,
-                    NotificationMenu notificationMenu,
-                    Scanner scanner) {
-        this.transactionService = transactionService;
-        this.transactionMenu = transactionMenu;
-        this.profileMenu = profileMenu;
-        this.budgetMenu = budgetMenu;
-        this.goalMenu = goalMenu;
-        this.analyticsMenu = analyticsMenu;
-        this.notificationMenu = notificationMenu;
-        this.scanner = scanner;
-    }
 
     public void show(User user) {
         while (true) {
